@@ -1,2 +1,2 @@
 # IMDB-Query
-Project for dealing with APIs and large data volume analysis. 
+Project for dealing with APIs and large data volume analysis in C. 
