@@ -1,9 +1,12 @@
 cmake_minimum_required(VERSION 3.31.6)
-project(IMDB_Query C)
+project(IMDB-Query C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(IMDB_Query main.c)
+find_package(CURL REQUIRED)
+add_executable(IMDB_Query main.c
+        util.c
+        util.h)
 
 include(FetchContent)
 
@@ -21,4 +24,5 @@ if (MINGW)
     target_compile_options(cjson PRIVATE -Wno-error=float-conversion)
 endif()
 
-target_link_libraries(IMDB_Query PRIVATE cjson)
+target_link_libraries(IMDB_Query PRIVATE CURL::libcurl
+cjson)
