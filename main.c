@@ -4,10 +4,13 @@
 #include "IQuery.h"
 
 #define IMDB_QUERY_URL "https://api.imdbapi.dev/titles"
+#define SEPARATOR "="
 
 int main (void) {
-    get_info(IMDB_QUERY_URL, "data.json");
-
+    char* ptr = calloc(10, sizeof(char));
+    scanf("%s", ptr);
+    strtol(ptr, NULL, 10);
+    free(ptr);
 
     return 0;
 }
