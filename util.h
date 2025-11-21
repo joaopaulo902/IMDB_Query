@@ -1,10 +1,9 @@
 //
 // Created by joaop on 18/11/2025.
 //
-#include <stddef.h>
-
 #ifndef IMDB_QUERY_UTIL_H
 #define IMDB_QUERY_UTIL_H
+#include <stddef.h>
 
 struct MemoryStruct {
     char *memory;

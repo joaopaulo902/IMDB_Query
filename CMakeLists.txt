@@ -7,7 +7,9 @@ find_package(cjson CONFIG REQUIRED)
 
 add_executable(IMDB_Query main.c
         util.c
-        util.h)
+        util.h
+        IQuery.c
+        IQuery.h)
 
 
 target_link_libraries(IMDB_Query PRIVATE
