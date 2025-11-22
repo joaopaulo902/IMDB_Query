@@ -26,7 +26,6 @@ typedef struct {
 /**
  * Struct for storing a @code Title's@endcode info
  * @code
- *
     char *id;
     char *type;
     char *primaryTitle;
@@ -62,10 +61,17 @@ typedef struct {
     char *plot;
 } Title;
 
+/**
+ * Struct for storing a page of the api's response
+ */
 typedef struct {
     Title *titles;
     long int titlesCount;
+    long int totalCount;
+    char* token;
 }TitlesResponse;
+
+
 
 /**
  * @param url
@@ -76,7 +82,7 @@ typedef struct {
  *
  *- appends every request to the end of the file
 */
-int get_info(char* url, const char* fileName);
+int Get_Info(char* url, const char* fileName);
 
 
 /**
@@ -97,8 +103,8 @@ Title parse_title(const cJSON *item);
  *
  * @param r struct that contains an array of titles and it's count
  *
- * frees all of the allocated memory allocated by working with the @code TitlesResponse@endcode struct
+ * frees allocated struct @code TitlesResponse@endcode
  */
-void free_titles(TitlesResponse *r);
+void free_titles(const TitlesResponse *r);
 
 #endif //IMDB_QUERY_IQUERY_H

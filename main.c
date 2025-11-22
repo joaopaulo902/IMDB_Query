@@ -7,10 +7,8 @@
 #define SEPARATOR "="
 
 int main (void) {
-    char* ptr = calloc(10, sizeof(char));
-    scanf("%s", ptr);
-    strtol(ptr, NULL, 10);
-    free(ptr);
+
 
     return 0;
 }
+

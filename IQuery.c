@@ -11,7 +11,6 @@
 
 
 
-
 int get_info(char* url, const char* fileName) {
     CURL* curl = curl_easy_init();
     CURLcode res = 0;
@@ -96,7 +95,6 @@ Title parse_title(const cJSON *item) {
     if (cJSON_IsArray(genres)) {
         t.genres_count = cJSON_GetArraySize(genres);
         t.genres = malloc(sizeof(char*) * t.genres_count);
-
         for (int i = 0; i < t.genres_count; i++) {
             cJSON *g = cJSON_GetArrayItem(genres, i);
             t.genres[i] = json_strdup(g);
@@ -124,4 +122,39 @@ void free_titles(const TitlesResponse *r) {
     }
 
     free(r->titles);
+}
+
+void get_page_item(FILE* fp, TitlesResponse *r) {
+    char buffer[32768];
+    int pos = 0;
+    int pageCount = 0;
+    fseek(fp, 0, SEEK_SET);
+    //-----read entire json file-----------
+    while (!feof(fp)) {
+        buffer[pos] = (char) fgetc(fp);
+        pos++;
+    }
+    buffer[pos] = '\0';
+    //-----parse buffer--------------------
+    cJSON *root = cJSON_Parse(buffer);
+    if (root == NULL) {
+        return;
+    }
+    cJSON *totalCount = cJSON_GetObjectItem(root, "totalCount");
+    r->totalCount = totalCount->valueint;
+    cJSON *nextPageToken = cJSON_GetObjectItem(root, "nextPageToken");
+    if (!nextPageToken) {
+        r->token = NULL;
+    }
+    r->token = json_strdup(nextPageToken);
+    cJSON *titles = cJSON_GetObjectItem(root, "titles");
+    pageCount = cJSON_GetArraySize(titles);
+    r->titles = malloc(sizeof(Title) * pageCount);
+    for (int i = 0; i < pageCount; i++) {
+        r->titles[i] = parse_title(cJSON_GetArrayItem(titles, i));
+    }
+}
+
+void record_on_binary() {
+
 }
