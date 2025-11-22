@@ -104,7 +104,7 @@ Title parse_title(const cJSON *item) {
     return t;
 }
 
-void free_titles(const TitlesResponse *r) {
+void free_titles_response(TitlesResponse *r) {
     for (int i = 0; i < r->titlesCount; i++) {
         Title *t = &r->titles[i];
 
@@ -120,25 +120,26 @@ void free_titles(const TitlesResponse *r) {
 
         free(t->genres);
     }
-
     free(r->titles);
+    free(r->token);
+    free(r);
 }
 
-void get_page_item(FILE* fp, TitlesResponse *r) {
+int get_page_item(FILE* fp, TitlesResponse *r) {
     char buffer[32768];
     int pos = 0;
     int pageCount = 0;
     fseek(fp, 0, SEEK_SET);
     //-----read entire json file-----------
-    while (!feof(fp)) {
+    while (!feof(fp) && pos < sizeof(buffer)) {
         buffer[pos] = (char) fgetc(fp);
         pos++;
     }
-    buffer[pos] = '\0';
+    buffer[sizeof(buffer) - 1] = '\0';
     //-----parse buffer--------------------
     cJSON *root = cJSON_Parse(buffer);
     if (root == NULL) {
-        return;
+        return 0;
     }
     cJSON *totalCount = cJSON_GetObjectItem(root, "totalCount");
     r->totalCount = totalCount->valueint;
@@ -146,15 +147,55 @@ void get_page_item(FILE* fp, TitlesResponse *r) {
     if (!nextPageToken) {
         r->token = NULL;
     }
-    r->token = json_strdup(nextPageToken);
+    else {
+        r->token = json_strdup(nextPageToken);
+    }
+
     cJSON *titles = cJSON_GetObjectItem(root, "titles");
     pageCount = cJSON_GetArraySize(titles);
+    r->titlesCount = pageCount;
     r->titles = malloc(sizeof(Title) * pageCount);
     for (int i = 0; i < pageCount; i++) {
         r->titles[i] = parse_title(cJSON_GetArrayItem(titles, i));
     }
+    cJSON_Delete(root);
+    return pageCount;
 }
 
-void record_on_binary() {
+void record_on_binary(const Title* titlesArray, int pageCount, FILE* fp) {
+    char id[64] = {0};
+    char type[32] = {0};
+    char primaryTitle[64] = {0};
+    char originalTitle[64] = {0};
+    //double Rating;
+    //long int voteCount;
+    char plot[256] = {0};
+    //int startYear;
+    //int runtimeSeconds;
+    for (int i =0; i < pageCount; i++) {
+        //copy data into fixed size strings
+        strncpy(id, titlesArray[i].id, sizeof(id) - 1);
+        strncpy(type, titlesArray[i].type, sizeof(type) - 1);
+        strncpy(primaryTitle, titlesArray[i].primaryTitle, sizeof(primaryTitle) - 1);
+        strncpy(originalTitle, titlesArray[i].originalTitle, sizeof(originalTitle) - 1);
+        strncpy(plot, titlesArray[i].plot, sizeof(plot) - 1);
 
+        //truncate end of data by substituting it with '\0' in case of overflow
+        id[sizeof(id) - 1] = '\0';
+        type[sizeof(type) - 1] = '\0';
+        primaryTitle[sizeof(primaryTitle) - 1] = '\0';
+        originalTitle[sizeof(originalTitle) - 1] = '\0';
+        plot[sizeof(plot) - 1] = '\0';
+
+        //write data into file
+        fwrite(id, sizeof(char), sizeof(id), fp);
+        fwrite(primaryTitle, sizeof(char), sizeof(primaryTitle), fp);
+        fwrite(originalTitle, sizeof(char), sizeof(originalTitle), fp);
+        fwrite(type, sizeof(char), sizeof(type), fp);
+        fwrite(plot, sizeof(char), sizeof(plot), fp);
+        fwrite(&titlesArray[i].rating.IMDBrating, sizeof(double), 1, fp);
+        fwrite(&titlesArray[i].rating.voteCount, sizeof(long int), 1, fp);
+        fwrite(&titlesArray[i].startYear, sizeof(int), 1, fp);
+        fwrite(&titlesArray[i].runtimeSeconds, sizeof(int), 1, fp);
+    }
 }

@@ -71,6 +71,33 @@ typedef struct {
     char* token;
 }TitlesResponse;
 
+/**
+ * Struct of definite size used for storing data in binary file
+ * Advantages of definitive allocated size: fast indexing, easy to use
+ *
+ */
+typedef struct {
+    char id[32];
+    char type[32];
+    char primaryTitle[128];
+    char originalTitle[128];
+    char plot[512];
+
+    struct {
+        char href[256];
+        int width;
+        int height;
+    } image;
+
+    struct {
+        double IMDBrating;
+        int voteCount;
+    } rating;
+
+    char genres[10][32];
+    int genres_count;
+} TitleDisk;
+
 
 
 /**
@@ -92,6 +119,14 @@ int Get_Info(char* url, const char* fileName);
  * if string object is a string and not NULL, returns the string object
  */
 static char* json_strdup(const cJSON* obj);
+
+/**
+ *
+ * @param fp json file pointer
+ * @param r TitleResponse struct for storing data
+ * @return number of titles in the page
+ */
+int get_page_item(FILE* fp, TitlesResponse *r);
 /**
 * @param item pointer to an item
 * @return t individual title struct\n
@@ -105,6 +140,13 @@ Title parse_title(const cJSON *item);
  *
  * frees allocated struct @code TitlesResponse@endcode
  */
-void free_titles(const TitlesResponse *r);
+void free_titles_response(TitlesResponse *r);
 
+/**
+ *
+ * @param titlesArray allocated array that stores the api's pages titles
+ * @param pageCount count of the titles in the api's page response
+ * @param fp binary file pointer
+ */
+void record_on_binary(const Title* titlesArray, int pageCount, FILE* fp);
 #endif //IMDB_QUERY_IQUERY_H
