@@ -12,6 +12,14 @@
 #include "util.h"
 
 #define IMDB_QUERY_URL "https://api.imdbapi.dev/titles"
+#define FILE_ID 0x494d4442
+
+typedef struct {
+    uint32_t ID;        // File identifier
+    uint32_t version;      // Format version
+    uint64_t recordCount;  // How many titles exist
+    char nextPageToken[1024]; //what is the next page's token if processing is halted
+} FileHeader;
 
 typedef struct {
     int width;
@@ -78,6 +86,7 @@ typedef struct {
  *
  */
 typedef struct {
+    uint32_t primaryKey;
     char id[32];
     char type[32];
     char primaryTitle[128];
@@ -159,9 +168,19 @@ void record_title_on_binary(const Title* titlesArray, int pageCount, FILE* fp);
 char *read_entire_file(FILE *fp);
 
 /**
- * reach out to the api and request full access to the database for titles table
- * destination archive: binaryInfo.bin
+ * Reach out to the api and request full access to the titles database\n\n
+ * Destination archive: binaryInfo.bin.
+ * At the file header, there is information about stuff like: file identifier, file version, record count and next
+ * url token, so the api's request can be resumed at any time.
  */
 void make_titles_full_request();
+
+/**
+ *
+ * @param fp file pointer
+ * @return int that says if file is empty
+ * checks if file is empty after opening it
+ */
+int is_file_empty(FILE *fp);
 #endif //IMDB_QUERY_IQUERY_H
 
