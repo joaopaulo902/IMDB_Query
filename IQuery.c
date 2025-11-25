@@ -245,7 +245,9 @@ void make_titles_full_request() {
         fH.nextPageToken[0] = '\0';
 
         fwrite(&fH, sizeof(FileHeader), 1, binFp);
-    } else {
+        fseek(binFp, sizeof(FileHeader), SEEK_SET);
+    }
+    else {
         if (fread(&fH, sizeof(FileHeader), 1, binFp) != 1) {
             perror("Failed to read header");
             fclose(binFp);
@@ -260,10 +262,9 @@ void make_titles_full_request() {
 
         if (fH.nextPageToken[0] != '\0') {
             snprintf(url, sizeof(url), "%s?pageToken=%s", IMDB_QUERY_URL, fH.nextPageToken);
+            fseek(binFp, (long) (sizeof(FileHeader) + sizeof(TitleDisk) * fH.recordCount), SEEK_SET );
         }
     }
-
-    fseek(binFp, sizeof(FileHeader), SEEK_SET);
     printf("%llu\n", fH.recordCount);
     do {
         printf("%d\n", i++);
@@ -300,7 +301,7 @@ void make_titles_full_request() {
         fwrite(&fH, sizeof(FileHeader), 1, binFp);
         fseek(binFp, 0, SEEK_END);
         free_titles_response(t);
-    }while (fH.recordCount < 2378285);
+    }while (fH.recordCount < 2378285 && fH.nextPageToken[0] != '\0');
     fclose(binFp);
 }
 

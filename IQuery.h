@@ -12,7 +12,7 @@
 #include "util.h"
 
 #define IMDB_QUERY_URL "https://api.imdbapi.dev/titles"
-#define FILE_ID 0x494d4442
+#define FILE_ID 0x42444d49
 
 typedef struct {
     uint32_t ID;        // File identifier
