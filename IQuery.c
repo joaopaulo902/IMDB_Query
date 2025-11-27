@@ -199,7 +199,7 @@ void record_titles_page_on_binary(const ParseTitle* titlesArray, FileHeader fHea
             printf("NULL plot detected at index %d\n", i);
         }
         entry.id = i + fHeader.recordCount;
-        put_title(entry, titlesArray[i], fHeader, fp);
+        put_title(entry, titlesArray[i], &fHeader, fp);
     }
 }
 

@@ -8,7 +8,7 @@
 #include "IQuery.h"
 #include "entities.h"
 
-void put_title(Titles entry, ParseTitle titlesArray, FileHeader f, FILE* fp) {
+void put_title(Titles entry, ParseTitle titlesArray, FileHeader* f, FILE* fp) {
     //copy data into fixed size strings
     strncpy(entry.IMDBid, titlesArray.id, sizeof(entry.IMDBid) - 1);
     strncpy(entry.type, titlesArray.type, sizeof(entry.type) - 1);
@@ -26,4 +26,15 @@ void put_title(Titles entry, ParseTitle titlesArray, FileHeader f, FILE* fp) {
 
     //write data into file
     fwrite(&entry , sizeof(Titles), 1, fp);
+}
+
+void put_stand_alone_title(Titles entry, ParseTitle titlesArray, FileHeader* fHead, FILE* fp) {
+    fseek(fp, 0, SEEK_SET); //goes to beningin of file
+    fread(fHead, sizeof(FileHeader), 1, fp); //reads the header
+    fseek(fp, ((sizeof(Titles) * fHead->recordCount) + sizeof(FileHeader)), SEEK_SET); // goes to last valid entry
+    entry.id = ++fHead->recordCount; //assigns incremented value of id
+    put_title(entry, titlesArray, fHead, fp); //inserts title into file
+    fseek(fp, 0, SEEK_SET); //goes to beningin again
+    fwrite(fHead , sizeof(FileHeader), 1, fp); //overwrites Header
+    fseek(fp, 0, SEEK_END); //goes to eof
 }
