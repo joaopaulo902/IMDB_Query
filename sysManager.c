@@ -22,23 +22,28 @@ void read_title() {
 void initialize_system() {
     Titles titles[] = {
         {
-            1, "tt0000001", "short", "Carmencita", "Bom filme, começa e termina", 1909, 0, {0}, (time_t) (-1),
+            1, "tt0000001", "short", "Carmencita", "Bom filme, começa e termina",
+            1909, 0, {0}, (time_t) (-1),
             (time_t) (-1), -1
         },
         {
-            2, "tt0000002", "short", "Le clown et ses chiens", "Um palhaço entretém cães", 1892, 0, {0}, (time_t) (-1),
+            2, "tt0000002", "short", "Le clown et ses chiens", "Um palhaço entretém cães",
+            1892, 0, {0}, (time_t) (-1),
             (time_t) (-1), -1
         },
         {
-            3, "tt0000003", "short", "Pauvre Pierrot", "Pierrot é enganado por Colombina", 1892, 0, {0}, (time_t) (-1),
+            3, "tt0000003", "short", "Pauvre Pierrot", "Pierrot é enganado por Colombina",
+            1892, 0, {0}, (time_t) (-1),
             (time_t) (-1), -1
         },
         {
-            4, "tt0000004", "short", "Un bon bock", "Homem bebe cerveja em um bar", 1892, 0, {0}, (time_t) (-1),
+            4, "tt0000004", "short", "Un bon bock", "Homem bebe cerveja em um bar",
+            1892, 0, {0}, (time_t) (-1),
             (time_t) (-1), -1
         },
         {
-            5, "tt0000005", "short", "Blacksmith Scene", "Cena de ferreiro em ação", 1893, 0, {0}, (time_t) (-1),
+            5, "tt0000005", "short", "Blacksmith Scene", "Cena de ferreiro em ação",
+            1893, 0, {0}, (time_t) (-1),
             (time_t) (-1), -1
         },
         {
@@ -63,42 +68,56 @@ void initialize_system() {
         }
     };
 
+    // Calculate total movies and pages
     int totalMovies = sizeof(titles) / sizeof(titles[0]);
     int totalPages = (totalMovies + PAGE_SIZE - 1) / PAGE_SIZE;
 
     int currentPage = 0;
     char buffer[32];
 
-
     while (1) {
         printPage(titles, totalMovies, currentPage);
+        print_menu_options();
 
+        // Evaluate wrong inputs
         if (!fgets(buffer, sizeof(buffer), stdin)) {
-            break; // erro de leitura
+            break;
         }
 
         char cmd = buffer[0];
 
-        if (cmd == 'q' || cmd == 'Q') {
-            break;
-        } else if (cmd == 'n' || cmd == 'N') {
-            if (currentPage < totalPages - 1) {
-                currentPage++;
-            }
-        } else if (cmd == 'p' || cmd == 'P') {
-            if (currentPage > 0) {
-                currentPage--;
-            }
-        } else if (cmd == 'i' || cmd == 'I') {
-            show_info(titles, totalMovies);
-        } else {
-            printf("Comando desconhecido. Use n, p, i ou q.\n");
-
-            Sleep(1000);
+        switch (cmd) {
+            case 'q':
+            case 'Q':
+                // Exit system
+                break;
+            case 'n':
+            case 'N':
+                // Next page
+                if (currentPage < totalPages - 1) {
+                    currentPage++;
+                }
+                continue;
+            case 'p':
+            case 'P':
+                // Previous page
+                if (currentPage > 0) {
+                    currentPage--;
+                }
+                continue;
+            case 'i':
+            case 'I':
+                // Show info
+                show_info(titles, totalMovies);
+                continue;
+            default:
+                printf("Comando desconhecido. Use n, p, i ou q.\n");
+                Sleep(1000);
+                continue;
         }
     }
 
-    //clearScreen();
+    clearScreen();
     printf("Encerrando...\n");
 }
 
@@ -109,7 +128,8 @@ void clearScreen() {
 void printTitleListHeader(int currentPage, int totalPages) {
     read_title();
     printf("==================================================================================\n");
-    printf("||  LISTA DE FILMES                                            |  Pagina %d de %d *\n", currentPage + 1, totalPages);
+    printf("||  LISTA DE FILMES                                            |  Pagina %d de %d *\n", currentPage + 1,
+           totalPages);
     printf("==================================================================================\n");
     printf("%-4s | %-50s | %-5s | %-4s | %-4s\n", "#", "Titulo", "Rating", "Ano", "Tipo");
     printf("-----+----------------------------------------------------+--------+------+------\n");
@@ -132,9 +152,12 @@ void printPage(Titles *titles, int totalMovies, int currentPage) {
                titles[i].startYear,
                titles[i].type);
     }
+}
 
-    printf("==============================================\n");
-    printf("[n] Proxima pagina  [p] Pagina anterior  [i] Info  [q] Sair\n");
+void print_menu_options() {
+    printf("==================================================================================\n");
+    printf("[s] Buscar registro      |  [o] Ordenar                |  [i] Info\n");
+    printf("[n] Proxima pagina       |  [p] Pagina anterior        |  [q] Sair\n");
     printf("Comando: ");
 }
 
