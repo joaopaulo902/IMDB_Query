@@ -19,7 +19,7 @@
  *
  * @endcode
  */
-void put_title(Titles entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp);
+void put_title(Titles* entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp);
 
 /**
  *
@@ -52,7 +52,7 @@ void put_rating(Rating entry, ParseRating dynamicRating, FileHeader fHeader, FIL
  */
 Titles get_title(Titles entry, int searchMode);
 
-void update_file_header(FileHeader* fH, char* title);
+void update_file_header(const FileHeader* fH, char* title);
 
 
 #endif //IMDB_QUERY_BINSERVICE_H

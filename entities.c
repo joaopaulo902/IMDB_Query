@@ -135,8 +135,9 @@ void record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fi
             printf("NULL plot detected at index %d\n", i);
         }
         title_entry.id = i + fHeader.recordCount;
-        put_title(title_entry, title, &fHeader, fp);
-
+        _fseeki64(fp, (off_t) (sizeof(Titles) * title_entry.id) + (off_t) sizeof(FileHeader), SEEK_SET);
+        put_title(&title_entry, title, &fHeader, fp);
+        fclose(fp);
 }
 
 int get_file_header(FileHeader* fH, char fileName[]) {
@@ -165,6 +166,7 @@ int get_file_header(FileHeader* fH, char fileName[]) {
         fclose(binFp);
         return -1;
     }
+    fclose(binFp);
     return 0;
 
 

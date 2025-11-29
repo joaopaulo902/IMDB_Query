@@ -16,11 +16,10 @@ void make_titles_full_request() {
     int i = 0;
     FileHeader fH = {0};
     int rvalue = get_file_header(&fH, "titles.bin");
-    if (rvalue != 0 ) {
+    if (rvalue != 0) {
         perror("error in get_file_header");
         return;
     }
-    update_file_header(&fH, "titles.bin");
     printf("%llu\n", fH.recordCount);
     do {
         printf("%d\n", i++);
@@ -37,7 +36,6 @@ void make_titles_full_request() {
             break;
         }
         for (int j = 0; j < pageCount; j++) {
-            t->titles[j].ratingId = j;
             record_title_on_binary(t->titles[j], fH, j, "titles.bin");
         }
 
