@@ -7,7 +7,6 @@
 #include "entities.h"
 #include "apiHandler.h"
 #include "binService.h"
-#include "util.h"
 #include <string.h>
 
 #define MAX_DATA 2378285
@@ -22,7 +21,11 @@ void make_titles_full_request() {
     do {
         printf("%d\n", i++);
         TitlesResponse* t = malloc(sizeof(TitlesResponse));
-        get_info(url, "data.json");
+
+        if (get_info(url, "data.json") != 0) {
+            printf("erro em get_info\n");
+            break;
+        }
         int pageCount =  get_page_title_item(t, "data.json");
         if (pageCount == -1) {
             perror("Failed to open data.json on reading");

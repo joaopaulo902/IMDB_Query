@@ -22,8 +22,11 @@ void put_title(Titles entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp) {
     entry.IMDBid[sizeof(entry.IMDBid) - 1] = '\0';
     entry.type[sizeof(entry.type) - 1] = '\0';
     entry.primaryTitle[sizeof(entry.primaryTitle) - 1] = '\0';
+
     entry.startYear = dynamicTitle.startYear;
     entry.runtimeSeconds = dynamicTitle.runtimeSeconds;
+    entry.rating.aggregateRating = dynamicTitle.rating.aggregateRating;
+    entry.rating.voteCount = dynamicTitle.rating.voteCount;
     //write data into file
     fwrite(&entry , sizeof(Titles), 1, fp);
 }

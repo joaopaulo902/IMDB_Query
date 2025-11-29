@@ -22,8 +22,7 @@ int get_info(char* url, char fileName[]) {
     FILE* filePointer = fopen(fileName, "w");
     if (!filePointer) {
         perror("Failed to open data.json on writing");
-        free_titles_response(t);
-        break;
+        return 2;
     }
 
     if (!curl) {
@@ -52,11 +51,11 @@ int get_info(char* url, char fileName[]) {
     if (!temp) {
         free(chunk.memory);
         fprintf(stderr, "Out of memory\n");
-        return 0; // or CURL_WRITE_ERROR
+        return 2; // or CURL_WRITE_ERROR
     }
     chunk.memory = temp;
     chunk.memory[chunk.size] = '\0';
-    fprintf(fp, "%s\n", chunk.memory);
+    fprintf(filePointer, "%s\n", chunk.memory);
     curl_easy_cleanup(curl);
     free(chunk.memory);
     fclose(filePointer);

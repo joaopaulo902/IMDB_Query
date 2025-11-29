@@ -4,12 +4,9 @@
 
 #include "entities.h"
 #include <stdlib.h>
-#include <stdint.h>
 #include <stdio.h>
 #include <cjson/cJSON.h>
 #include <string.h>
-
-#include "apiHandler.h"
 #include "binService.h"
 #include "util.h"
 
@@ -136,12 +133,11 @@ void record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fi
             printf("NULL plot detected at index %d\n", i);
         }
         title_entry.id = i + fHeader.recordCount;
-
         put_title(title_entry, title, &fHeader, fp);
 
 }
 
-char* get_file_header(FileHeader *fH, char fileName[]) {
+char* get_file_header(FileHeader* fH, char fileName[]) {
     FILE* binFp = fopen(fileName, "rb");
     if (!binFp)
         binFp = fopen(fileName, "wb+");
@@ -154,10 +150,10 @@ char* get_file_header(FileHeader *fH, char fileName[]) {
         fH->recordCount = 0;
         fH->nextPageToken[0] = '\0';
 
-        fwrite(&fH, sizeof(FileHeader), 1, binFp);
+        fwrite(fH, sizeof(FileHeader), 1, binFp);
         fseek(binFp, sizeof(FileHeader), SEEK_SET);
     }
-    if (fread(&fH, sizeof(FileHeader), 1, binFp) != 1) {
+    if (fread(fH, sizeof(FileHeader), 1, binFp) != 1) {
             perror("Failed to read header");
             fclose(binFp);
             return "-1";

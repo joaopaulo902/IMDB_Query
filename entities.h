@@ -148,7 +148,6 @@ typedef struct {
 
 
     int64_t statId; //correspondent stat ID offset for title
-    int64_t ratingId; //correspondent rating ID offset for title
     //int isAdult; actual boolean type: maybe we put it in
 } Titles;
 
@@ -257,7 +256,7 @@ void free_titles_response(TitlesResponse *r);
  * @param title allocated array that stores the api's pages titles
  * @param i index of current title
  * @param fHeader file Header struct
- * @param fp binary file pointer
+ * @param fileName binary file pointer
  */
 void record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fileName[]);
 
