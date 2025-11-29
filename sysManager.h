@@ -17,7 +17,7 @@ void clearScreen();
 
 void printTitleListHeader(int currentPage, int totalPages);
 
-void printPage(Titles *titles, int totalMovies, int currentPage);
+void print_titles_list(Titles *titles, int totalMovies, int currentPage);
 void print_menu_options();
 
 void show_info(Titles *movies, int totalMovies);
