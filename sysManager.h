@@ -35,11 +35,11 @@ void print_info_header();
 
 /**
  * Print paginated list of titles
- * @param titles list of titles to be printed
+ * @param page list of titles to be printed
  * @param totalMovies count of total movies in the list
  * @param currentPage current page number to be displayed
  */
-void print_titles_list(Titles *titles, int totalMovies, int currentPage);
+void print_titles_list(Titles *page, int totalMovies, int currentPage);
 
 /**
  * Print menu options

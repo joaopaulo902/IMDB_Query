@@ -62,3 +62,13 @@ void make_titles_full_request() {
 void parse_awards() {
 
 }
+
+int get_titles_count() {
+    FileHeader fH = {0};
+    int rvalue = get_file_header(&fH, "titles.bin");
+    if (rvalue != 0) {
+        perror("error in get_file_header");
+        return -1;
+    }
+    return (int)fH.recordCount;
+}

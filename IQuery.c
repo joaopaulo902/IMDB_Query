@@ -13,8 +13,33 @@
 
 #include "IQuery.h"
 
+#include <stdio.h>
+#include <string.h>
 
+#include "sysManager.h"
 
+void query_titles_by_page(int currentPage, Titles* page, int totalMovies) {
+    FILE* fp = fopen("titles.bin", "rb");
+    if (!fp) {
+        perror("Failed to open titles.bin");
+
+        memset(page, 0, PAGE_SIZE * sizeof(Titles));
+        return;
+    }
+
+    memset(page, 0, PAGE_SIZE * sizeof(Titles));
+
+    int start = currentPage * PAGE_SIZE;
+    int remaining = totalMovies - start;
+    int toRead = remaining < PAGE_SIZE ? remaining : PAGE_SIZE;
+
+    long long offset = sizeof(FileHeader) + (long long)start * sizeof(Titles);
+    _fseeki64(fp, offset, SEEK_SET);
+
+    fread(page, sizeof(Titles), toRead, fp);
+
+    fclose(fp);
+}
 
 
 
