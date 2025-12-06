@@ -5,6 +5,7 @@
 
 #include "dbContext.h"
 #include "entities.h"
+#include "postings.h"
 #include "apiHandler.h"
 #include "binService.h"
 #include <string.h>
@@ -36,7 +37,8 @@ void make_titles_full_request() {
             break;
         }
         for (int j = 0; j < pageCount; j++) {
-            record_title_on_binary(t->titles[j], fH, j, "titles.bin");
+            Titles lastEntry = record_title_on_binary(t->titles[j], fH, j, "titles.bin");
+            insert_index_into_posting(t->titles[j], lastEntry, j);
         }
 
         fH.recordCount += pageCount;
@@ -63,12 +65,3 @@ void parse_awards() {
 
 }
 
-int get_titles_count() {
-    FileHeader fH = {0};
-    int rvalue = get_file_header(&fH, "titles.bin");
-    if (rvalue != 0) {
-        perror("error in get_file_header");
-        return -1;
-    }
-    return (int)fH.recordCount;
-}

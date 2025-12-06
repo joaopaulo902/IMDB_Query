@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="IMDB-Query"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\..\;CMake Files\..\..\..\vcpkg\;CMake Files\..\..\..\vcpkg\scripts\;CMake Files\..\..\..\vcpkg\scripts\buildsystems\;CMake Files\..\..\..\vcpkg\installed\;CMake Files\..\..\..\vcpkg\installed\x64-windows\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\curl\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\zlib\;CMake Files\..\..\..\vcpkg\installed\x64-windows\share\cjson\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="IMDB_Query">
+				<Option output="C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/IMDB_Query.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/joaop/vcpkg/installed/x64-windows/include"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="/mingw/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 IMDB_Query"/>
+					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="IMDB_Query/fast">
+				<Option output="C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/IMDB_Query.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="C:/Users/joaop/vcpkg/installed/x64-windows/include"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../include"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/include-fixed"/>
+					<Add directory="C:/Program Files/JetBrains/CLion 2025.2.2/bin/mingw/bin/../lib/gcc/x86_64-w64-mingw32/13.1.0/../../../../x86_64-w64-mingw32/include"/>
+					<Add directory="/mingw/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 IMDB_Query/fast"/>
+					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="C:/PROGRA~1/JETBRA~1/CLION2~1.2/bin/mingw/bin/mingw32-make.exe -f &quot;C:/Users/joaop/UFRGS/CPD/IMDB_Query/cmake-build-debug/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/IQuery.c">
+			<Option target="IMDB_Query"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/IQuery.h">
+			<Option target="IMDB_Query"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/main.c">
+			<Option target="IMDB_Query"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/util.c">
+			<Option target="IMDB_Query"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/util.h">
+			<Option target="IMDB_Query"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/scripts/buildsystems/vcpkg.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\scripts\buildsystems\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/curl/CURLConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\curl\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/curl/CURLConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\curl\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/curl/CURLTargets-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\curl\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/curl/CURLTargets-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\curl\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/curl/CURLTargets.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\curl\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/curl/vcpkg-cmake-wrapper.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\curl\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/zlib/vcpkg-cmake-wrapper.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\zlib\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/cjson/cJSONConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\cjson\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/cjson/cjson-debug.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\cjson\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/cjson/cjson-release.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\cjson\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/cjson/cjson.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\cjson\"/>
+		</Unit>
+		<Unit filename="C:/Users/joaop/UFRGS/CPD/IMDB_Query/../../../vcpkg/installed/x64-windows/share/cjson/cjsonConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\..\vcpkg\installed\x64-windows\share\cjson\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

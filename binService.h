@@ -54,5 +54,5 @@ Titles get_title(Titles entry, int searchMode);
 
 void update_file_header(const FileHeader* fH, char* title);
 
-
+double convert_string_to_double(char* string);
 #endif //IMDB_QUERY_BINSERVICE_H

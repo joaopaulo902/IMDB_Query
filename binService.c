@@ -61,3 +61,9 @@ void update_file_header(const FileHeader* fH, char fileName[]) {
     fwrite(fH, sizeof(FileHeader), 1, binFp);
     fclose(binFp);
 }
+
+double convert_string_to_double(char* string) {
+    double codification = 1;
+
+    return codification;
+}

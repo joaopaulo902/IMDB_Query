@@ -7,6 +7,4 @@
 
 void make_titles_full_request();
 
-int get_titles_count();
-
 #endif //IMDB_QUERY_DBCONTEXT_H
