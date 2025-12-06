@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 
+#include "dbContext.h"
+#include "IQuery.h"
+
 void read_title() {
     FILE *ptFile;
     ptFile = fopen("title.txt", "r");
@@ -20,64 +23,11 @@ void read_title() {
 }
 
 void initialize_system() {
-    Titles titles[] = {
-        {
-            1, "tt0000001", "short", "Carmencita", "Bom filme, começa e termina",
-            1909, 0, {0}, (time_t) (-1),
-            (time_t) (-1), -1
-        },
-        {
-            2, "tt0000002", "short", "Le clown et ses chiens", "Um palhaço entretém cães",
-            1892, 0, {0}, (time_t) (-1),
-            (time_t) (-1), -1
-        },
-        {
-            3, "tt0000003", "short", "Pauvre Pierrot", "Pierrot é enganado por Colombina",
-            1892, 0, {0}, (time_t) (-1),
-            (time_t) (-1), -1
-        },
-        {
-            4, "tt0000004", "short", "Un bon bock", "Homem bebe cerveja em um bar",
-            1892, 0, {0}, (time_t) (-1),
-            (time_t) (-1), -1
-        },
-        {
-            5, "tt0000005", "short", "Blacksmith Scene", "Cena de ferreiro em ação",
-            1893, 0, {0}, (time_t) (-1),
-            (time_t) (-1), -1
-        },
-        {
-            6, "tt0000006", "short", "Chinese Opium Den", "Cena em uma casa de ópio chinesa", 1894, 0, {0},
-            (time_t) (-1), (time_t) (-1), -1
-        },
-        {
-            7, "tt0000007", "short", "Corbett and Courtney Before the Kinetograph", "Luta entre Corbett e Courtney",
-            1894, 0, {0}, (time_t) (-1), (time_t) (-1), -1
-        },
-        {
-            8, "tt0000008", "short", "Edison Kinetoscopic Record of a Sneeze", "Registro de um espirro por Edison",
-            1894, 0, {0}, (time_t) (-1), (time_t) (-1), -1
-        },
-        {
-            9, "tt0000009", "short", "Miss Jerry", "Primeiro filme narrativo americano completo", 1894, 0, {0},
-            (time_t) (-1), (time_t) (-1), -1
-        },
-        {
-            10, "tt0000010", "short", "The Execution of Mary Stuart", "Execução de Maria Stuart encenada", 1895, 0, {0},
-            (time_t) (-1), (time_t) (-1), -1
-        },
-        {
-            11, "tt0000011", "short", "The Kiss", "Primeiro beijo filmado", 1896, 0, {0},
-            (time_t) (-1), (time_t) (-1), -1
-        },
-        {
-            12, "tt0000012", "short", "The Lonely Villa", "Drama de suspense em uma vila isolada", 1909, 0, {0},
-            (time_t) (-1), (time_t) (-1), -1
-        }
-    };
+
+    Titles titles[PAGE_SIZE];
 
     // Calculate total movies and pages
-    int totalMovies = sizeof(titles) / sizeof(titles[0]);
+    int totalMovies = get_titles_count();
     int totalPages = (totalMovies + PAGE_SIZE - 1) / PAGE_SIZE;
 
     int currentPage = 0;
@@ -174,21 +124,21 @@ void print_info_header() {
     printf("==================================================================================\n");
 }
 
-void print_titles_list(Titles *titles, int totalMovies, int currentPage) {
+void print_titles_list(Titles *page, int totalMovies, int currentPage) {
+
+    query_titles_by_page(currentPage, page, totalMovies);
+
     int totalPages = (totalMovies + PAGE_SIZE - 1) / PAGE_SIZE;
-    int start = currentPage * PAGE_SIZE;
-    int end = start + PAGE_SIZE;
-    if (end > totalMovies) end = totalMovies;
 
     print_title_list_header(currentPage, totalPages);
 
-    for (int i = start; i < end; i++) {
+    for (int i = 0; i < PAGE_SIZE; i++) {
         printf("%-4d | %-50s |  %4.1f  | %-4d | %-10s\n",
-               i + 1,
-               titles[i].primaryTitle,
-               titles[i].rating.aggregateRating,
-               titles[i].startYear,
-               titles[i].type);
+               (currentPage * PAGE_SIZE) + i + 1,
+               page[i].primaryTitle,
+               page[i].rating.aggregateRating,
+               page[i].startYear,
+               page[i].type);
     }
 }
 
