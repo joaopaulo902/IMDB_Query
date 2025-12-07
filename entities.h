@@ -53,7 +53,7 @@ typedef struct {
     int64_t ratingId;
 
     char **genres;
-    int genres_count;
+    int genresCount;
 
     ParseRating rating;
 
@@ -91,7 +91,7 @@ typedef struct {
     int32_t id; //genre ID
     char name[32]; //genre name
     char fileName[32]; //name of the file that contains the titles belonging to the genre
-} Genre;
+} ParseGenre;
 
 /**
  * Contains a title's stats
@@ -106,8 +106,6 @@ typedef struct {
  * Contains the offset of a title's entry classified as the genre it's under
  */
 typedef struct {
-    int64_t id;
-
     int64_t titleId;
 } GenreTitle;
 
@@ -258,7 +256,7 @@ void free_titles_response(TitlesResponse *r);
  * @param fHeader file Header struct
  * @param fileName binary file pointer
  */
-void record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fileName[]);
+Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fileName[]);
 
 /**
  *

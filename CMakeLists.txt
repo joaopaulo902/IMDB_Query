@@ -27,6 +27,7 @@ add_executable(IMDB_Query
         dbContext.c dbContext.h
         apiHandler.c apiHandler.h
         sysManager.c sysManager.h
+        filterGenre.h filterGenre.c
 )
 
 # ---------------------------------------------

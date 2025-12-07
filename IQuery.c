@@ -33,7 +33,7 @@ void query_titles_by_page(int currentPage, Titles* page, int totalMovies) {
     int remaining = totalMovies - start;
     int toRead = remaining < PAGE_SIZE ? remaining : PAGE_SIZE;
 
-    long long offset = sizeof(FileHeader) + (long long)start * sizeof(Titles);
+    long long offset = (long long) sizeof(FileHeader) + (long long) start * (long long) sizeof(Titles);
     _fseeki64(fp, offset, SEEK_SET);
 
     fread(page, sizeof(Titles), toRead, fp);

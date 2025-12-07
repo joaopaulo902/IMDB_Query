@@ -7,6 +7,7 @@
 #include "entities.h"
 #include "apiHandler.h"
 #include "binService.h"
+#include "filterGenre.h"
 #include <string.h>
 
 #define MAX_DATA 2378285
@@ -36,7 +37,8 @@ void make_titles_full_request() {
             break;
         }
         for (int j = 0; j < pageCount; j++) {
-            record_title_on_binary(t->titles[j], fH, j, "titles.bin");
+            Titles lastEntry = record_title_on_binary(t->titles[j], fH, j, "titles.bin");
+            insert_genre_index(t->titles[j], lastEntry);
         }
 
         fH.recordCount += pageCount;
