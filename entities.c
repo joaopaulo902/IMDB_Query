@@ -89,9 +89,9 @@ ParseTitle parse_title(const cJSON *item) {
     // ---- genres array ----
     cJSON *genres = cJSON_GetObjectItem(item, "genres");
     if (cJSON_IsArray(genres)) {
-        t.genres_count = cJSON_GetArraySize(genres);
-        t.genres = malloc(sizeof(char*) * t.genres_count);
-        for (int i = 0; i < t.genres_count; i++) {
+        t.genresCount = cJSON_GetArraySize(genres);
+        t.genres = malloc(sizeof(char*) * t.genresCount);
+        for (int i = 0; i < t.genresCount; i++) {
             cJSON *g = cJSON_GetArrayItem(genres, i);
             t.genres[i] = json_strdup(g);
         }
@@ -113,7 +113,7 @@ void free_titles_response(TitlesResponse *r) {
         free(t->originalTitle);
         free(t->plot);
 
-        for (int g = 0; g < t->genres_count; g++)
+        for (int g = 0; g < t->genresCount; g++)
             free(t->genres[g]);
 
         free(t->genres);
@@ -128,7 +128,7 @@ void free_titles_response(TitlesResponse *r) {
 
 
 
-void record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPage, char fileName[]) {
+Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPage, char fileName[]) {
     FILE* fp = fopen(fileName, "rb+");
     if (!fp) {
         perror("Erro abrindo titles.bin");
@@ -154,6 +154,7 @@ void record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPag
     put_title(&entry, title, &fHeader, fp);
 
     fclose(fp);
+    return entry;
 }
 
 

@@ -7,8 +7,6 @@
 
 #include "sysManager.h"
 #include "entities.h"
-#include <stdio.h>
-#include <stdlib.h>
 #define PAGE_SIZE 10
 
 /**
