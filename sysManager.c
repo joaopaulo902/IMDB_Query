@@ -131,7 +131,7 @@ void print_search_header(char* term, int currentPage, int totalPages, double ela
     clear_screen();
     read_title();
     printf("==================================================================================\n");
-    printf("||  Busca: %-41s Tempo: %.2f ms | Pag %d de %d * \n", term, currentPage + 1, totalPages);
+    printf("||  Busca: %-41s Tempo: %.2f ms | Pag %d de %d * \n", term, elapsedMs, currentPage + 1, totalPages);
     printf("==================================================================================\n");
     printf("%-4s | %-50s | %-5s | %-4s | %-4s\n",
            "#", "Titulo", "Rating", "Ano", "Tipo");
