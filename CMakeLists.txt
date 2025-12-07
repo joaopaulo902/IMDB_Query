@@ -53,8 +53,35 @@ target_compile_definitions(IMDB_Query PRIVATE
 add_custom_command(
         TARGET IMDB_Query POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "Atualizando titles.bin em resource/..."
+
+        # Create file if it doesn't exist
+        COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_CURRENT_BINARY_DIR}/${GENRE}.bin"
+
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_BINARY_DIR}/titles.bin"
         "${RESOURCE_DIR}/titles.bin"
         COMMENT "Copiando titles.bin do build para resource/"
 )
+# Lista de gêneros
+set(GENRES
+        "Action" "Adult" "Adventure" "Animation" "Biography" "Comedy" "Crime"
+        "Documentary" "Drama" "Family" "Fantasy" "Film Noir" "Game Show"
+        "History" "Horror" "Musical" "Music" "Mystery" "News" "Reality-TV"
+        "Romance" "Sci-Fi" "Short" "Sport" "Talk-Show" "Thriller"
+        "War" "Western"
+)
+# Loop para copiar cada GENRE.bin
+foreach(GENRE ${GENRES})
+    add_custom_command(
+            TARGET IMDB_Query POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E echo "Atualizando ${GENRE}.bin em resource/..."
+
+            # Create file if it doesn't exist
+            COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_CURRENT_BINARY_DIR}/${GENRE}.bin"
+
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            "${CMAKE_CURRENT_BINARY_DIR}/${GENRE}.bin"
+            "${RESOURCE_DIR}/${GENRE}.bin"
+    )
+endforeach()
+
