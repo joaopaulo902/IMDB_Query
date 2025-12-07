@@ -128,18 +128,36 @@ void free_titles_response(TitlesResponse *r) {
 
 
 
-Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fileName[]) {
-        Titles title_entry = {0};
-        FILE* fp = fopen(fileName, "rb+");
-        if (!title.plot) {
-            printf("NULL plot detected at index %d\n", i);
-        }
-        title_entry.id = i + fHeader.recordCount;
-        _fseeki64(fp, (off_t) (sizeof(Titles) * title_entry.id) + (off_t) sizeof(FileHeader), SEEK_SET);
-        put_title(&title_entry, title, &fHeader, fp);
-        fclose(fp);
-        return title_entry;
+Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPage, char fileName[]) {
+    FILE* fp = fopen(fileName, "rb+");
+    if (!fp) {
+        perror("Erro abrindo titles.bin");
+        return;
+    }
+
+    Titles entry = {0};
+
+    // Ler header atual
+    fseek(fp, 0, SEEK_SET);
+    fread(&fHeader, sizeof(FileHeader), 1, fp);
+
+    entry.id = fHeader.recordCount + indexInPage + 1;
+
+    // Indexar o título (ESSENCIAL)
+    add_title_name(title.originalTitle, entry.id);
+
+    // Calcular offset da escrita do título
+    off_t offset = sizeof(FileHeader) + sizeof(Titles) * entry.id;
+    _fseeki64(fp, offset - sizeof(Titles), SEEK_SET);
+
+    // Gravar título no arquivo
+    put_title(&entry, title, &fHeader, fp);
+
+    fclose(fp);
+    return entry;
 }
+
+
 
 int get_file_header(FileHeader* fH, char fileName[]) {
     FILE* binFp = fopen(fileName, "rb");

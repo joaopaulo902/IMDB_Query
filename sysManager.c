@@ -4,8 +4,10 @@
 #include <stdlib.h>
 #include <curl/curl.h>
 
+#include "binService.h"
 #include "dbContext.h"
 #include "IQuery.h"
+#include "titleSearch.h"
 
 void read_title() {
     FILE *ptFile;
@@ -78,6 +80,7 @@ void initialize_system() {
             case 's':
             case 'S':
                 // Show search page
+                show_search_page();
                 continue;
             case 'o':
             case 'O':
@@ -124,6 +127,18 @@ void print_info_header() {
     printf("==================================================================================\n");
 }
 
+void print_search_header(char* term, int currentPage, int totalPages, double elapsedMs) {
+    clear_screen();
+    read_title();
+    printf("==================================================================================\n");
+    printf("||  Busca: %-41s Tempo: %.2f ms | Pag %d de %d * \n", term, elapsedMs, currentPage + 1, totalPages);
+    printf("==================================================================================\n");
+    printf("%-4s | %-50s | %-5s | %-4s | %-4s\n",
+           "#", "Titulo", "Rating", "Ano", "Tipo");
+    printf("-----+----------------------------------------------------+--------+------+------\n");
+}
+
+
 void print_titles_list(Titles *page, int totalMovies, int currentPage) {
 
     query_titles_by_page(currentPage, page, totalMovies);
@@ -165,6 +180,122 @@ void show_info_page(int totalMovies) {
 
     clear_screen();
 }
+
+void show_search_page() {
+    char searchTerm[100];
+
+    clear_screen();
+    read_title();
+    printf("==================================================================================\n");
+    printf("|| Busca de titulos                                                             *\n");
+    printf("==================================================================================\n");
+    printf("Digite o termo de busca: ");
+    fgets(searchTerm, sizeof(searchTerm), stdin);
+
+    size_t len = strlen(searchTerm);
+    if (len > 0 && searchTerm[len - 1] == '\n')
+        searchTerm[len - 1] = '\0';
+
+    // ---- MEDIR TEMPO DE BUSCA ----
+    clock_t begin = clock();
+
+    int count;
+    int* ids = search_term(searchTerm, &count);
+
+    clock_t end = clock();
+    double elapsedMs = (double)(end - begin) * 1000.0 / CLOCKS_PER_SEC;
+
+    // --------------------------------
+
+    if (!ids || count == 0) {
+        printf("Nenhum titulo encontrado.\n");
+        printf("Pressione ENTER para voltar...");
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
+        clear_screen();
+        return;
+    }
+
+    Titles* results = malloc(count * sizeof(Titles));
+    for (int i = 0; i < count; i++)
+        results[i] = get_title_by_id(ids[i]);
+
+    free(ids);
+
+    int currentPage = 0;
+    char buffer[16];
+
+    while (1) {
+        print_search_page_results(results, count, searchTerm, currentPage, elapsedMs);
+
+        if (!fgets(buffer, sizeof(buffer), stdin)) break;
+        char cmd = buffer[0];
+
+        switch (cmd) {
+            case 'n':
+            case 'N':
+                if ((currentPage + 1) * PAGE_SIZE < count)
+                    currentPage++;
+                break;
+
+            case 'p':
+            case 'P':
+                if (currentPage > 0)
+                    currentPage--;
+                break;
+
+            case 'q':
+            case 'Q':
+                free(results);
+                clear_screen();
+                return;
+
+            default:
+                printf("Comando invalido.\n");
+                Sleep(800);
+        }
+    }
+
+    free(results);
+    clear_screen();
+}
+
+
+
+
+void print_search_page_results(Titles* results, int count, char* term, int currentPage, double elapsedMs) {
+    int totalPages = (count + PAGE_SIZE - 1) / PAGE_SIZE;
+
+    print_search_header(term, currentPage, totalPages, elapsedMs);
+
+    int start = currentPage * PAGE_SIZE;
+    int end = start + PAGE_SIZE;
+    if (end > count) end = count;
+
+    int printed = 0;
+
+    for (int i = start; i < end; i++) {
+        printf("%-4d | %-50s |  %4.1f  | %-4d | %-10s\n",
+               results[i].id,
+               results[i].primaryTitle,
+               results[i].rating.aggregateRating,
+               results[i].startYear,
+               results[i].type);
+        printed++;
+    }
+
+    // ---- COMPLETAR A TABELA COM LINHAS VAZIAS ----
+    for (; printed < PAGE_SIZE; printed++) {
+        printf("%-4s | %-50s | %-6s | %-4s | %-10s\n", "", "", "", "", "");
+    }
+    // ------------------------------------------------
+
+    printf("==================================================================================\n");
+    printf("[n] Proxima pagina | [p] Pagina anterior | [q] Voltar ao menu\n");
+    printf("Comando: ");
+}
+
+
 
 void order_by_year(Titles *titles, int totalMovies) {
     for (int i = 0; i < totalMovies - 1; i++) {

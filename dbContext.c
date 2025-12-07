@@ -10,7 +10,9 @@
 #include "filterGenre.h"
 #include <string.h>
 
-#define MAX_DATA 2378285
+#include "titleSearch.h"
+
+#define MAX_DATA 11000
 
 void make_titles_full_request() {
     char url[1024] = {IMDB_QUERY_URL};
@@ -53,8 +55,11 @@ void make_titles_full_request() {
             break;
         }
         update_file_header(&fH, "titles.bin");
+
         free_titles_response(t);
     }while (fH.recordCount < MAX_DATA && fH.nextPageToken[0] != '\0');
+
+    save_dictionary("vocabulary.bin", "postings.bin");
 }
 
 

@@ -6,32 +6,45 @@
 #include <curl/curl.h>
 #include <stdio.h>
 #include "entities.h"
+#include "titleSearch.h"
 
 void put_title(Titles* entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp) {
-    //copy data into fixed size strings
+    // Copiar strings
     strncpy(entry->IMDBid, dynamicTitle.id, sizeof(entry->IMDBid) - 1);
+    entry->IMDBid[sizeof(entry->IMDBid) - 1] = '\0';
+
     strncpy(entry->type, dynamicTitle.type, sizeof(entry->type) - 1);
+    entry->type[sizeof(entry->type) - 1] = '\0';
+
     strncpy(entry->primaryTitle, dynamicTitle.primaryTitle, sizeof(entry->primaryTitle) - 1);
+    entry->primaryTitle[sizeof(entry->primaryTitle) - 1] = '\0';
+
     if (dynamicTitle.plot) {
         strncpy(entry->plot, dynamicTitle.plot, sizeof(entry->plot) - 1);
-        entry->plot[sizeof(entry->rating) - 1] = '\0';
+        entry->plot[sizeof(entry->plot) - 1] = '\0';
     } else {
-        entry->plot[0] = '\0';  // safe empty string
+        entry->plot[0] = '\0';
     }
-    //truncate end of data by substituting it with '\0' in case of overflow
-    entry->IMDBid[sizeof(entry->IMDBid) - 1] = '\0';
-    entry->type[sizeof(entry->type) - 1] = '\0';
-    entry->primaryTitle[sizeof(entry->primaryTitle) - 1] = '\0';
-    entry->plot[sizeof(entry->plot) - 1] = '\0';
 
+    // Copiar campos simples
     entry->startYear = dynamicTitle.startYear;
     entry->runtimeSeconds = dynamicTitle.runtimeSeconds;
+
     entry->rating.aggregateRating = dynamicTitle.rating.aggregateRating;
     entry->rating.voteCount = dynamicTitle.rating.voteCount;
-    //write data into file
+
+    // Escreve struct Titles no binário
     if (fwrite(entry, sizeof(Titles), 1, fp) != 1) {
         perror("write error");
     }
+}
+
+
+void add_title_name(char* rawTitle, int id) {
+    char normalized[256];
+    normalize_title(rawTitle, normalized);
+
+    tokenize_and_index(normalized, id);
 }
 
 /**
@@ -44,20 +57,51 @@ void put_title(Titles* entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp) 
  */
 void put_stand_alone_title(Titles entry, ParseTitle titlesArray, FileHeader* fHead, FILE* fp) {
 
-    fseek(fp, 0, SEEK_SET); //goes to beningin of file
-    fread(fHead, sizeof(FileHeader), 1, fp); //reads the header
-    off_t offset = (off_t)sizeof(FileHeader) + (off_t)sizeof(Titles) * (off_t)fHead->recordCount;
+    // lê header
+    fseek(fp, 0, SEEK_SET);
+    fread(fHead, sizeof(FileHeader), 1, fp);
+
+    // calcula offset
+    off_t offset = sizeof(FileHeader) + sizeof(Titles) * fHead->recordCount;
     _fseeki64(fp, offset, SEEK_SET);
+
+    // DEFINIR ID CORRETO AQUI
     entry.id = ++fHead->recordCount;
+
+    // Indexar o título SOMENTE AGORA — quando o ID está correto
+    add_title_name(titlesArray.originalTitle, entry.id);
+
+    // escrever o título
     put_title(&entry, titlesArray, fHead, fp);
-    fseek(fp, 0, SEEK_SET); //goes to beningin again
-    fwrite(fHead , sizeof(FileHeader), 1, fp); //overwrites Header
-    fseek(fp, 0, SEEK_END); //goes to eof
+
+    // atualiza header
+    fseek(fp, 0, SEEK_SET);
+    fwrite(fHead, sizeof(FileHeader), 1, fp);
+    fseek(fp, 0, SEEK_END);
 }
+
 
 void update_file_header(const FileHeader* fH, char fileName[]) {
     FILE* binFp = fopen(fileName, "rb+");
     fseek(binFp, 0, SEEK_SET);
     fwrite(fH, sizeof(FileHeader), 1, binFp);
     fclose(binFp);
+}
+
+Titles get_title_by_id(int id) {
+    Titles title = {0};
+    FILE* fp = fopen("titles.bin", "rb");
+    if (!fp) {
+        perror("Erro abrindo titles.bin");
+        return title;
+    }
+
+    // CORREÇÃO AQUI
+    off_t offset = sizeof(FileHeader) + sizeof(Titles) * (id - 1);
+    _fseeki64(fp, offset, SEEK_SET);
+
+    fread(&title, sizeof(Titles), 1, fp);
+
+    fclose(fp);
+    return title;
 }
