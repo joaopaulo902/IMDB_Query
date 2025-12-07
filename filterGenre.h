@@ -6,7 +6,7 @@
 #define IMDB_QUERY_POSTINGS_H
 #include "entities.h"
 
-void insert_genre_index(ParseTitle title, Titles entry);
+void insert_genre_index(ParseTitle title, Title entry);
 uint64_t hashFunction(uint64_t h);
 void test_filter(void);
 

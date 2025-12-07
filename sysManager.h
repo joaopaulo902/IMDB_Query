@@ -37,7 +37,7 @@ void print_info_header();
  * @param totalMovies count of total movies in the list
  * @param currentPage current page number to be displayed
  */
-void print_titles_list(Titles *page, int totalMovies, int currentPage);
+void print_titles_list(Title *page, int totalMovies, int currentPage);
 
 /**
  * Print menu options
@@ -56,9 +56,9 @@ void show_search_page();
  * @param titles list of titles to be ordered
  * @param totalMovies count of total movies in the list
  */
-void order_by_year(Titles *titles, int totalMovies);
+void order_by_year(Title *titles, int totalMovies);
 
-void print_search_page_results(Titles* results, int count, char* term, int currentPage, double elapsedMs);
+void print_search_page_results(Title* results, int count, char* term, int currentPage, double elapsedMs);
 void print_search_header(char* term, int currentPage, int totalPages, double elapsedMs);
 
 #endif //SYSMANAGER_H

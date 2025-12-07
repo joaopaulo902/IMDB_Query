@@ -10,9 +10,10 @@
 #include "filterGenre.h"
 #include <string.h>
 
+#include "bpTree.h"
 #include "titleSearch.h"
 
-#define MAX_DATA 200
+#define MAX_DATA 500
 
 void make_titles_full_request() {
     char url[1024] = {IMDB_QUERY_URL};
@@ -38,10 +39,16 @@ void make_titles_full_request() {
             free_titles_response(t);
             break;
         }
+        BPTree *T = bpt_open(YEAR_INDEX_FILE);
+        BPTree *R = bpt_open(RATING_INDEX_FILE);
         for (int j = 0; j < pageCount; j++) {
-            Titles lastEntry = record_title_on_binary(t->titles[j], fH, j, "titles.bin");
+            Title lastEntry = record_title_on_binary(t->titles[j], fH, j, "titles.bin");
+            bpt_insert(T, lastEntry.startYear, lastEntry.id, lastEntry.id);
+            bpt_insert(R, lastEntry.rating.aggregateRating, lastEntry.id, lastEntry.id);
             insert_genre_index(t->titles[j], lastEntry);
         }
+        bpt_close(T);
+        bpt_close(R);
 
         fH.recordCount += pageCount;
         if (t->token != NULL && strlen(t->token) > 0) {

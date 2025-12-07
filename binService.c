@@ -8,7 +8,7 @@
 #include "entities.h"
 #include "titleSearch.h"
 
-void put_title(Titles* entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp) {
+void put_title(Title* entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp) {
     // Copiar strings
     strncpy(entry->IMDBid, dynamicTitle.id, sizeof(entry->IMDBid) - 1);
     entry->IMDBid[sizeof(entry->IMDBid) - 1] = '\0';
@@ -30,11 +30,11 @@ void put_title(Titles* entry, ParseTitle dynamicTitle, FileHeader* f, FILE* fp) 
     entry->startYear = dynamicTitle.startYear;
     entry->runtimeSeconds = dynamicTitle.runtimeSeconds;
 
-    entry->rating.aggregateRating = dynamicTitle.rating.aggregateRating;
+    entry->rating.aggregateRating = (int32_t) (100 * dynamicTitle.rating.aggregateRating);
     entry->rating.voteCount = dynamicTitle.rating.voteCount;
 
     // Escreve struct Titles no binário
-    if (fwrite(entry, sizeof(Titles), 1, fp) != 1) {
+    if (fwrite(entry, sizeof(Title), 1, fp) != 1) {
         perror("write error");
     }
 }
@@ -55,14 +55,14 @@ void add_title_name(char* rawTitle, int id) {
  * @param fp
  *
  */
-void put_stand_alone_title(Titles entry, ParseTitle titlesArray, FileHeader* fHead, FILE* fp) {
+void put_stand_alone_title(Title entry, ParseTitle titlesArray, FileHeader* fHead, FILE* fp) {
 
     // lê header
     fseek(fp, 0, SEEK_SET);
     fread(fHead, sizeof(FileHeader), 1, fp);
 
     // calcula offset
-    off_t offset = sizeof(FileHeader) + sizeof(Titles) * fHead->recordCount;
+    off_t offset = sizeof(FileHeader) + sizeof(Title) * fHead->recordCount;
     _fseeki64(fp, offset, SEEK_SET);
 
     // DEFINIR ID CORRETO AQUI
@@ -88,8 +88,8 @@ void update_file_header(const FileHeader* fH, char fileName[]) {
     fclose(binFp);
 }
 
-Titles get_title_by_id(int id) {
-    Titles title = {0};
+Title get_title_by_id(int id) {
+    Title title = {0};
     FILE* fp = fopen("titles.bin", "rb");
     if (!fp) {
         perror("Erro abrindo titles.bin");
@@ -97,10 +97,10 @@ Titles get_title_by_id(int id) {
     }
 
     // CORREÇÃO AQUI
-    off_t offset = sizeof(FileHeader) + sizeof(Titles) * (id - 1);
+    off_t offset = sizeof(FileHeader) + sizeof(Title) * (id - 1);
     _fseeki64(fp, offset, SEEK_SET);
 
-    fread(&title, sizeof(Titles), 1, fp);
+    fread(&title, sizeof(Title), 1, fp);
 
     fclose(fp);
     return title;

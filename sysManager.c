@@ -26,7 +26,7 @@ void read_title() {
 
 void initialize_system() {
 
-    Titles titles[PAGE_SIZE];
+    Title titles[PAGE_SIZE];
 
     // Calculate total movies and pages
     int totalMovies = get_titles_count();
@@ -139,7 +139,7 @@ void print_search_header(char* term, int currentPage, int totalPages, double ela
 }
 
 
-void print_titles_list(Titles *page, int totalMovies, int currentPage) {
+void print_titles_list(Title *page, int totalMovies, int currentPage) {
 
     query_titles_by_page(currentPage, page, totalMovies);
 
@@ -216,7 +216,7 @@ void show_search_page() {
         return;
     }
 
-    Titles* results = malloc(count * sizeof(Titles));
+    Title* results = malloc(count * sizeof(Title));
     for (int i = 0; i < count; i++)
         results[i] = get_title_by_id(ids[i]);
 
@@ -263,7 +263,7 @@ void show_search_page() {
 
 
 
-void print_search_page_results(Titles* results, int count, char* term, int currentPage, double elapsedMs) {
+void print_search_page_results(Title* results, int count, char* term, int currentPage, double elapsedMs) {
     int totalPages = (count + PAGE_SIZE - 1) / PAGE_SIZE;
 
     print_search_header(term, currentPage, totalPages, elapsedMs);
@@ -297,11 +297,11 @@ void print_search_page_results(Titles* results, int count, char* term, int curre
 
 
 
-void order_by_year(Titles *titles, int totalMovies) {
+void order_by_year(Title *titles, int totalMovies) {
     for (int i = 0; i < totalMovies - 1; i++) {
         for (int j = 0; j < totalMovies - i - 1; j++) {
             if (titles[j].startYear > titles[j + 1].startYear) {
-                Titles temp = titles[j];
+                Title temp = titles[j];
                 titles[j] = titles[j + 1];
                 titles[j + 1] = temp;
             }

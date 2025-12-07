@@ -30,6 +30,8 @@ add_executable(IMDB_Query
         titleSearch.c
         titleSearch.h
         filterGenre.h filterGenre.c
+        bpTree.c
+        bpTree.h
 )
 
 # ---------------------------------------------

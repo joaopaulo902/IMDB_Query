@@ -17,7 +17,7 @@ uint64_t hashFunction(uint64_t h) {
     return (uint64_t) h;
 }
 
-void insert_genre_index(ParseTitle title, Titles entry) {
+void insert_genre_index(ParseTitle title, Title entry) {
 
     const char *genreList[] = {
         "Action", "Adult", "Adventure", "Animation", "Biography", "Comedy", "Crime",
@@ -127,7 +127,7 @@ void test_filter() { //main
         fread(&entry, sizeof(entry), 1, fp);
         if (entry.titleId == 1) {
             printf("FOUND at slot %llu\n", slot);
-            Titles title = get_title_by_id(1);
+            Title title = get_title_by_id(1);
             printf("%s\n Title name", title.primaryTitle);
             break;
         }

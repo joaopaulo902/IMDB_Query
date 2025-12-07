@@ -128,9 +128,9 @@ void free_titles_response(TitlesResponse *r) {
 
 
 
-Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPage, char fileName[]) {
+Title record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPage, char fileName[]) {
     FILE* fp = fopen(fileName, "rb+");
-    Titles entry = {0};
+    Title entry = {0};
     if (!fp) {
         perror("Erro abrindo titles.bin");
         return entry;
@@ -148,8 +148,8 @@ Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInP
     add_title_name(title.originalTitle, entry.id);
 
     // Calcular offset da escrita do título
-    off_t offset = sizeof(FileHeader) + sizeof(Titles) * entry.id;
-    _fseeki64(fp, offset - sizeof(Titles), SEEK_SET);
+    off_t offset = sizeof(FileHeader) + sizeof(Title) * entry.id;
+    _fseeki64(fp, offset - sizeof(Title), SEEK_SET);
 
     // Gravar título no arquivo
     put_title(&entry, title, &fHeader, fp);

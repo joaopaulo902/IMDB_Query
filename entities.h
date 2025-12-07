@@ -114,8 +114,9 @@ typedef struct {
  */
 typedef struct {
     int64_t id;
-    double aggregateRating;
-    unsigned long int voteCount;
+
+    int32_t aggregateRating;
+    uint64_t voteCount;
 } Rating;
 
 /**
@@ -147,7 +148,7 @@ typedef struct {
 
     int64_t statId; //correspondent stat ID offset for title
     //int isAdult; actual boolean type: maybe we put it in
-} Titles;
+} Title;
 
 /**
  * struct that will go into seed types.bin
@@ -256,7 +257,7 @@ void free_titles_response(TitlesResponse *r);
  * @param fHeader file Header struct
  * @param fileName binary file pointer
  */
-Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fileName[]);
+Title record_title_on_binary(ParseTitle title, FileHeader fHeader, int i, char fileName[]);
 
 /**
  *
