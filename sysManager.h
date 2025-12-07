@@ -60,6 +60,7 @@ void show_search_page();
  */
 void order_by_year(Titles *titles, int totalMovies);
 
-void print_search_results(Titles* results, int count, char* term);
+void print_search_page_results(Titles* results, int count, char* term, int currentPage, double elapsedMs);
+void print_search_header(char* term, int currentPage, int totalPages, double elapsedMs);
 
 #endif //SYSMANAGER_H

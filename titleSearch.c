@@ -149,10 +149,8 @@ int is_stopword(char *token) {
 }
 
 int64_t write_posting_list(FILE *posts, int *ids, int count) {
-    printf("  [write] Iniciando escrita de %d IDs\n", count);
 
     int64_t firstOffset = ftell(posts);
-    printf("  [write] firstOffset=%lld\n", firstOffset);
 
     int remaining = count;
     int indexBase = 0;
@@ -163,15 +161,12 @@ int64_t write_posting_list(FILE *posts, int *ids, int count) {
         block.count = remaining > BLOCK_SIZE ? BLOCK_SIZE : remaining;
         block.nextOffset = 0;
 
-        printf("  [write] Escrevendo bloco: count=%d\n", block.count);
 
         for (int i = 0; i < block.count; i++) {
             block.ids[i] = ids[indexBase + i];
-            printf("    ID[%d] = %d\n", i, block.ids[i]);
         }
 
         int64_t blockStart = ftell(posts);
-        printf("  [write] blockStart = %lld\n", blockStart);
 
         fwrite(&block.count, sizeof(int), 1, posts);
         fwrite(&block.nextOffset, sizeof(int64_t), 1, posts);
@@ -182,16 +177,12 @@ int64_t write_posting_list(FILE *posts, int *ids, int count) {
 
         if (remaining > 0) {
             int64_t next = ftell(posts);
-            printf("  [write] nextOffset será %lld\n", next);
-
             fseek(posts, blockStart + sizeof(int), SEEK_SET);
             fwrite(&next, sizeof(int64_t), 1, posts);
 
             fseek(posts, next, SEEK_SET);
         }
     }
-
-    printf("  [write] FINAL firstOffset=%lld\n", firstOffset);
 
     return firstOffset;
 }
@@ -231,14 +222,9 @@ void save_dictionary(const char *vocabFile, const char *postingsFile) {
         strncpy(entry.term, list[i].term, sizeof(entry.term) - 1);
 
         // Criar lista encadeada no postings.bin
-        printf("\n=== TERM: '%s' ===\n", list[i].term);
-        printf("IDs (%d): ", list[i].count);
         for (int k = 0; k < list[i].count; k++) printf("%d ", list[i].ids[k]);
-        printf("\n");
 
         entry.firstBlockOffset = write_posting_list(posts, list[i].ids, list[i].count);
-
-        printf("-> Gravando postings para '%s'...\n", list[i].term);
 
         fwrite(&entry, sizeof(VocabularyEntry), 1, vocab);
     }
@@ -280,15 +266,11 @@ VocabularyEntry find_in_vocabulary(char *term) {
     int totalEntries = fileSize / sizeof(VocabularyEntry);
     fseek(fp, 0, SEEK_SET);
 
-    printf("[vocab] Procurando '%s'\n", term);
-    printf("[vocab] totalEntries=%d\n", totalEntries);
-
     int left = 0;
     int right = totalEntries - 1;
 
     while (left <= right) {
         int mid = (left + right) / 2;
-        printf("[vocab] mid=%d lendo='%s'\n", mid, entry.term);
 
         fseek(fp, mid * sizeof(VocabularyEntry), SEEK_SET);
         fread(&entry, sizeof(VocabularyEntry), 1, fp);
@@ -324,24 +306,16 @@ int *load_postings(int64_t offset, int *outCount) {
     int64_t current = offset;
     PostingBlock block;
 
-    // 1ª PASSAGEM: contar quantos IDs existem no total
-    printf("[load] Começando leitura offset=%lld\n", offset);
-
     while (current != 0) {
         fseek(fp, current, SEEK_SET);
 
-        // 🔥 Leia ANTES de imprimir
         fread(&block.count, sizeof(int), 1, fp);
         fread(&block.nextOffset, sizeof(int64_t), 1, fp);
-
-        printf("[load] Bloco @%lld -> count=%d next=%lld\n",
-               current, block.count, block.nextOffset);
 
         total += block.count;
         current = block.nextOffset;
     }
 
-    printf("[load] Total de IDs = %d\n", total);
 
     // Alocar vetor para todos IDs
     int *ids = malloc(total * sizeof(int));
@@ -350,7 +324,6 @@ int *load_postings(int64_t offset, int *outCount) {
     current = offset;
     int pos = 0;
 
-    printf("[load] Carregando IDs a partir do offset %lld\n", offset);
 
     while (current != 0) {
         fseek(fp, current, SEEK_SET);
@@ -358,10 +331,6 @@ int *load_postings(int64_t offset, int *outCount) {
         fread(&block.count, sizeof(int), 1, fp);
         fread(&block.nextOffset, sizeof(int64_t), 1, fp);
         fread(block.ids, sizeof(int), block.count, fp);
-
-        printf("[load] Bloco @%lld IDs: ", current);
-        for (int p = 0; p < block.count; p++) printf("%d ", block.ids[p]);
-        printf("\n");
 
         memcpy(ids + pos, block.ids, block.count * sizeof(int));
         pos += block.count;
@@ -372,7 +341,6 @@ int *load_postings(int64_t offset, int *outCount) {
     fclose(fp);
 
     *outCount = total;
-    printf("[load] Leitura concluída.\n");
     return ids;
 }
 
@@ -383,11 +351,9 @@ int *search_term(char *term, int *outCount) {
     // 1. Normalizar o termo
     char normalized[256];
     normalize_title((char *) term, normalized);
-    printf("Texto normalizado: %s\n", normalized);
 
     // 2. Procurar no vocabulary.bin
     VocabularyEntry entry = find_in_vocabulary(normalized);
-    printf("Id em vocabulary (offset): %lld\n", entry.firstBlockOffset);
 
     if (entry.firstBlockOffset == -1) {
         // Não encontrado
