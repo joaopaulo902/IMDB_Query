@@ -57,7 +57,7 @@ add_custom_command(
         COMMAND ${CMAKE_COMMAND} -E echo "Atualizando titles.bin em resource/..."
 
         # Create file if it doesn't exist
-        COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_CURRENT_BINARY_DIR}/${GENRE}.bin"
+        COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_CURRENT_BINARY_DIR}/titles.bin"
 
         COMMAND ${CMAKE_COMMAND} -E copy_if_different
         "${CMAKE_CURRENT_BINARY_DIR}/titles.bin"

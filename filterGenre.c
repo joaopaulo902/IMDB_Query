@@ -2,17 +2,19 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
+
+#include "binService.h"
 #include "entities.h"
 
 #define HASH_SZ 4194304  // 4 million slots, safe
 
-int64_t hashFunction(uint64_t h) {
+uint64_t hashFunction(uint64_t h) {
     h ^= h >> 33;
     h *= 0xff51afd7ed558ccdULL;
     h ^= h >> 33;
     h *= 0xc4ceb9fe1a85ec53ULL;
     h ^= h >> 33;
-    return (int64_t) h;
+    return (uint64_t) h;
 }
 
 void insert_genre_index(ParseTitle title, Titles entry) {
@@ -74,20 +76,20 @@ void insert_genre_index(ParseTitle title, Titles entry) {
         long long base = sizeof(FileHeader);
 
         // compute hash
-        int64_t h = hashFunction(entry.id);
-        int64_t idx = h % HASH_SZ;
+        uint64_t h = hashFunction(entry.id);
+        uint64_t idx = h % HASH_SZ;
 
         // do linear probing
         while (1) {
-            long long offset = (long long) base + idx * (long long)sizeof(GenreTitle);
-            _fseeki64(fp, offset, SEEK_SET);
+            unsigned long long offset = (unsigned long long) base + idx * (unsigned long long)sizeof(GenreTitle);
+            _fseeki64(fp, (long long)offset, SEEK_SET);
 
             GenreTitle slot;
             fread(&slot, sizeof(slot), 1, fp);
 
             if (slot.titleId == 0) {
                 // empty slot — insert
-                _fseeki64(fp, offset, SEEK_SET);
+                _fseeki64(fp, (long long) offset, SEEK_SET);
                 GenreTitle genreEntry = {0};
                 genreEntry.titleId = entry.id;
                 fwrite(&genreEntry, sizeof(genreEntry), 1, fp);
@@ -113,28 +115,28 @@ void insert_genre_index(ParseTitle title, Titles entry) {
 }
 
 void test_filter() { //main
-    FILE* fp = fopen("Mystery.bin", "r");
+    FILE* fp = fopen("Drama.bin", "r");
     fseek(fp, 0, SEEK_SET);
     FileHeader fh;
     GenreTitle entry;
     fread(&fh, sizeof(fh), 1, fp);
-    uint64_t h = hashFunction(3) % 4194304;
-    for (uint64_t i = 0; i < 4194304; i++) {
-
-        uint64_t slot = (h + i) % 4194304;
-        fseeko(fp, sizeof(fh) + slot*sizeof(entry), SEEK_SET);
+    uint64_t h = hashFunction(1) % HASH_SZ;
+    for (uint64_t i = 0; i < HASH_SZ; i++) {
+        uint64_t slot = (h + i) % HASH_SZ;
+        _fseeki64(fp, (long long) sizeof(fh) + (long long)slot * (long long) sizeof(entry), SEEK_SET);
         fread(&entry, sizeof(entry), 1, fp);
-
-        if (entry.titleId == 3) {
+        if (entry.titleId == 1) {
             printf("FOUND at slot %llu\n", slot);
+            Titles title = get_title_by_id(1);
+            printf("%s\n Title name", title.primaryTitle);
             break;
         }
-
         if (entry.titleId == 0) {
             printf("NOT FOUND - empty slot\n");
             break;
         }
     }
+
     fclose(fp);
 }
 

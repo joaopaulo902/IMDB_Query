@@ -130,12 +130,13 @@ void free_titles_response(TitlesResponse *r) {
 
 Titles record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPage, char fileName[]) {
     FILE* fp = fopen(fileName, "rb+");
+    Titles entry = {0};
     if (!fp) {
         perror("Erro abrindo titles.bin");
-        return;
+        return entry;
     }
 
-    Titles entry = {0};
+
 
     // Ler header atual
     fseek(fp, 0, SEEK_SET);

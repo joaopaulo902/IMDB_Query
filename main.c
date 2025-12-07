@@ -10,6 +10,7 @@
 int main(void) {
     //make_titles_full_request();
     //initialize_system();
-    //test_filter();
+    test_filter();
+
     return 0;
 }
