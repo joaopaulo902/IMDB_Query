@@ -3,8 +3,8 @@
 #include <string.h>
 #include "sysManager.h"
 
-void query_titles_by_page(int currentPage, Title* page, int totalMovies) {
-    FILE* fp = fopen("titles.bin", "rb");
+void query_titles_by_page(int currentPage, Title *page, int totalMovies) {
+    FILE *fp = fopen("titles.bin", "rb");
     if (!fp) {
         perror("Failed to open titles.bin");
 
@@ -25,15 +25,3 @@ void query_titles_by_page(int currentPage, Title* page, int totalMovies) {
 
     fclose(fp);
 }
-
-
-
-
-
-
-
-
-
-
-
-

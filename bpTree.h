@@ -1,5 +1,5 @@
-#ifndef IMDB_QUERY_FILTERISADULT_H
-#define IMDB_QUERY_FILTERISADULT_H
+#ifndef BPTREE_H
+#define BPTREE_H
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -239,4 +239,4 @@ int print_value_cb(int64_t val, void *ctx);
  */
 int BP_tree_test(void);
 
-#endif //IMDB_QUERY_FILTERISADULT_H
+#endif //BPTREE_H

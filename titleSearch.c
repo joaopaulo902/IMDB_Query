@@ -122,7 +122,7 @@ void insert_token_into_dictionary(char *token, int id) {
 
 int is_stopword(char *token) {
     const char *STOPWORDS[] = {
-        "a", "an", "the",
+        "a", "an",
         "of", "and", "or",
         "to", "in", "on",
         "for", "with",
