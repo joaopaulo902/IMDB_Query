@@ -7,7 +7,10 @@
 #include "IQuery.h"
 #include <stdio.h>
 
-#define TITLES_BIN_PATH "titles.bin"
+#ifndef TITLES_BIN_PATH
+#define TITLES_BIN_PATH "titles.bin"   // fallback seguro
+#endif
+
 #define VOCABULARY_BIN_PATH "vocabulary.bin"
 #define POSTINGS_BIN_PATH "postings.bin"
 
@@ -23,7 +26,7 @@
  *
  * @endcode
  */
-void put_title(Title *entry, ParseTitle dynamicTitle, FileHeader *f, FILE *fp);
+void put_title(Title *entry, ParseTitle dynamicTitle, FILE *fp);
 
 /**
  *

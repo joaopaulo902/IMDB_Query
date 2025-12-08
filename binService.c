@@ -56,7 +56,7 @@ void put_stand_alone_title(Title entry, ParseTitle titlesArray, FileHeader *fHea
     entry.id = ++fHead->recordCount;
     add_title_name(titlesArray.originalTitle, entry.id);
 
-    put_title(&entry, titlesArray, fHead, fp);
+    put_title(&entry, titlesArray, fp);
 
     // Update header
     fseek(fp, 0, SEEK_SET);

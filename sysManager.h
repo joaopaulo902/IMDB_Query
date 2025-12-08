@@ -77,4 +77,8 @@ void print_search_page_results(Title* results, int count, char* term, int curren
  */
 void print_search_header(char* term, int currentPage, int totalPages, double elapsedMs);
 
+/**
+ * Show filter page for year range filtering
+ */
+void show_filter_page();
 #endif //SYSMANAGER_H

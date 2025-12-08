@@ -3,11 +3,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <curl/curl.h>
-
+#include <windows.h>
 #include "binService.h"
+#include "bpTree.h"
 #include "dbContext.h"
 #include "IQuery.h"
 #include "titleSearch.h"
+
+BPTree *TREE_CTX = NULL;
 
 void read_title() {
     FILE *ptFile;
@@ -25,6 +28,7 @@ void read_title() {
 }
 
 void initialize_system() {
+    TREE_CTX = bpt_open(YEAR_INDEX_FILE);
 
     Title titles[PAGE_SIZE];
 
@@ -87,11 +91,18 @@ void initialize_system() {
                 order_by_year(titles, totalMovies);
                 // Show order options on menu
                 continue;
+            case 'f':
+            case 'F':
+                show_filter_page();
+                continue;
+
             default:
                 printf("Comando desconhecido. Use n, p, i ou q.\n");
                 Sleep(1000);
         }
     }
+
+    bpt_close(TREE_CTX);
 
     clear_screen();
     // Show cursor before exiting
@@ -127,7 +138,7 @@ void print_info_header() {
     printf("==================================================================================\n");
 }
 
-void print_search_header(char* term, int currentPage, int totalPages, double elapsedMs) {
+void print_search_header(char *term, int currentPage, int totalPages, double elapsedMs) {
     clear_screen();
     read_title();
     printf("==================================================================================\n");
@@ -140,7 +151,6 @@ void print_search_header(char* term, int currentPage, int totalPages, double ela
 
 
 void print_titles_list(Title *page, int totalMovies, int currentPage) {
-
     query_titles_by_page(currentPage, page, totalMovies);
 
     int totalPages = (totalMovies + PAGE_SIZE - 1) / PAGE_SIZE;
@@ -151,7 +161,7 @@ void print_titles_list(Title *page, int totalMovies, int currentPage) {
         printf("%-4d | %-50s |  %4.1f  | %-4d | %-10s\n",
                (currentPage * PAGE_SIZE) + i + 1,
                page[i].primaryTitle,
-               page[i].rating.aggregateRating,
+               page[i].rating.aggregateRating / 100.0,
                page[i].startYear,
                page[i].type);
     }
@@ -159,13 +169,12 @@ void print_titles_list(Title *page, int totalMovies, int currentPage) {
 
 void print_menu_options() {
     printf("==================================================================================\n");
-    printf("[s] Buscar registro      |  [o] Ordenar por ano        |  [i] Info\n");
-    printf("[n] Proxima pagina       |  [p] Pagina anterior        |  [q] Sair\n");
+    printf("[f] Filtrar por ano | [s] Buscar registro | [o] Ordenar por ano | [i] Info\n");
+    printf("[n] Proxima pagina  | [p] Pagina anterior                       | [q] Sair\n");
     printf("Comando: ");
 }
 
 void show_info_page(int totalMovies) {
-
     int totalPages = (totalMovies + PAGE_SIZE - 1) / PAGE_SIZE;
 
     clear_screen();
@@ -196,16 +205,16 @@ void show_search_page() {
     if (len > 0 && searchTerm[len - 1] == '\n')
         searchTerm[len - 1] = '\0';
 
-    // ---- MEDIR TEMPO DE BUSCA ----
-    clock_t begin = clock();
+    LARGE_INTEGER freq, begin, end;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&begin);
 
     int count;
     int* ids = search_term(searchTerm, &count);
 
-    clock_t end = clock();
-    double elapsedMs = (double)(end - begin) * 1000.0 / CLOCKS_PER_SEC;
+    QueryPerformanceCounter(&end);
 
-    // --------------------------------
+    double elapsedMs = (double)(end.QuadPart - begin.QuadPart) * 1000.0 / freq.QuadPart;
 
     if (!ids || count == 0) {
         printf("Nenhum titulo encontrado.\n");
@@ -216,7 +225,7 @@ void show_search_page() {
         return;
     }
 
-    Title* results = malloc(count * sizeof(Title));
+    Title *results = malloc(count * sizeof(Title));
     for (int i = 0; i < count; i++)
         results[i] = get_title_by_id(ids[i]);
 
@@ -261,9 +270,7 @@ void show_search_page() {
 }
 
 
-
-
-void print_search_page_results(Title* results, int count, char* term, int currentPage, double elapsedMs) {
+void print_search_page_results(Title *results, int count, char *term, int currentPage, double elapsedMs) {
     int totalPages = (count + PAGE_SIZE - 1) / PAGE_SIZE;
 
     print_search_header(term, currentPage, totalPages, elapsedMs);
@@ -278,21 +285,150 @@ void print_search_page_results(Title* results, int count, char* term, int curren
         printf("%-4d | %-50s |  %4.1f  | %-4d | %-10s\n",
                results[i].id,
                results[i].primaryTitle,
-               results[i].rating.aggregateRating,
+               results[i].rating.aggregateRating / 100.0,
                results[i].startYear,
                results[i].type);
         printed++;
     }
 
-    // ---- COMPLETAR A TABELA COM LINHAS VAZIAS ----
     for (; printed < PAGE_SIZE; printed++) {
         printf("%-4s | %-50s | %-6s | %-4s | %-10s\n", "", "", "", "", "");
     }
-    // ------------------------------------------------
 
     printf("==================================================================================\n");
     printf("[n] Proxima pagina | [p] Pagina anterior | [q] Voltar ao menu\n");
     printf("Comando: ");
+}
+
+void show_filter_page() {
+    clear_screen();
+    read_title();
+    printf("==================================================================================\n");
+    printf("||  Filtro por Ano (B+ Tree)                                                   *\n");
+    printf("==================================================================================\n");
+
+    int ylo, yhi;
+    printf("Ano minimo: ");
+    scanf("%d", &ylo);
+    printf("Ano maximo: ");
+    scanf("%d", &yhi);
+
+    // limpar \n restante do buffer
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+
+    // Cursor interno do B+ Tree
+    int count = 0;
+    int64_t leaf_off = -1;
+    int pos = 0;
+
+    // Carregar PRIMEIRA página de 10 IDs do índice
+    int64_t *ids = bpt_range_query_page(TREE_CTX, ylo, yhi, &count, &leaf_off, &pos);
+
+    if (count == 0) {
+        printf("Nenhum registro encontrado no intervalo [%d, %d].\n", ylo, yhi);
+        printf("Pressione ENTER para voltar...");
+        getchar();
+        clear_screen();
+        return;
+    }
+
+    // Converte IDs em Titles
+    Title *page = malloc(count * sizeof(Title));
+    for (int i = 0; i < count; i++)
+        page[i] = get_title_by_id(ids[i]);
+    free(ids);
+
+    int currentPage = 0;
+    char buffer[16];
+
+    while (1) {
+        clear_screen();
+        read_title();
+        printf("==================================================================================\n");
+        printf("||  Filtro Ano [%d - %d] — Página %d                                           *\n",
+               ylo, yhi, currentPage + 1);
+        printf("==================================================================================\n");
+        printf("%-4s | %-50s | %-5s | %-4s | %-4s\n",
+               "#", "Titulo", "Rating", "Ano", "Tipo");
+        printf("-----+----------------------------------------------------+--------+------+------\n");
+
+        int start = currentPage * PAGE_SIZE;
+        int end = start + PAGE_SIZE;
+
+        // Se precisamos de mais itens para preencher a UI
+        while (end > count && leaf_off != -1) {
+            // Buscar mais até preencher
+            ids = bpt_range_query_page(TREE_CTX, ylo, yhi, &count, &leaf_off, &pos);
+            if (count == 0) {
+                // índice acabou
+                leaf_off = -1;
+                break;
+            }
+
+            // Carregar mais registros
+            free(page);
+            page = malloc(count * sizeof(Title));
+            for (int i = 0; i < count; i++)
+                page[i] = get_title_by_id(ids[i]);
+            free(ids);
+        }
+
+        if (end > count) end = count;
+
+        int printed = 0;
+        for (int i = start; i < end; i++) {
+            printf("%-4lld | %-50s |  %4.1f  | %-4d | %-10s\n",
+                   (long long) page[i].id,
+                   page[i].primaryTitle,
+                   page[i].rating.aggregateRating / 100.0,
+                   page[i].startYear,
+                   page[i].type);
+            printed++;
+        }
+
+        for (; printed < PAGE_SIZE; printed++)
+            printf("%-4s | %-50s | %-6s | %-4s | %-10s\n", "", "", "", "", "");
+
+        printf("==================================================================================\n");
+
+        // Opções
+        printf("[n] Próxima página");
+        printf(" | [p] Página anterior");
+        printf(" | [q] Voltar\n");
+        printf("Comando: ");
+
+        if (!fgets(buffer, sizeof(buffer), stdin)) break;
+        char cmd = buffer[0];
+
+        switch (cmd) {
+            case 'q':
+            case 'Q':
+                free(page);
+                clear_screen();
+                return;
+
+            case 'p':
+            case 'P':
+                if (currentPage > 0)
+                    currentPage--;
+                break;
+
+            case 'n':
+            case 'N':
+                // só avança se houver mais itens a exibir
+                if ((currentPage + 1) * PAGE_SIZE < count || leaf_off != -1)
+                    currentPage++;
+                break;
+
+            default:
+                printf("Comando inválido.\n");
+                Sleep(800);
+        }
+    }
+
+    free(page);
+    clear_screen();
 }
 
 
@@ -307,5 +443,3 @@ void order_by_year(Title *titles, int totalMovies) {
         }
     }
 }
-
-

@@ -135,7 +135,7 @@ Title record_title_on_binary(ParseTitle title, FileHeader fHeader, int indexInPa
     _fseeki64(fp, offset - sizeof(Title), SEEK_SET);
 
     // Gravar título no arquivo
-    put_title(&entry, title, &fHeader, fp);
+    put_title(&entry, title, fp);
 
     fclose(fp);
     return entry;
