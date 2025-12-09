@@ -12,10 +12,12 @@
 #include "titleSearch.h"
 #include "view.h"
 
-BPTree *TREE_CTX = NULL;
+BPTree *TREE_CTX_YEAR = NULL;
+BPTree *TREE_CTX_RATING = NULL;
 
 void initialize_system() {
-    TREE_CTX = bpt_open(YEAR_INDEX_FILE);
+    TREE_CTX_YEAR = bpt_open(YEAR_INDEX_FILE);
+    TREE_CTX_RATING = bpt_open(RATING_INDEX_FILE);
 
     Title titles[PAGE_SIZE];
 
@@ -75,26 +77,24 @@ void initialize_system() {
                 continue;
             case 'o':
             case 'O':
-                //order_by_year(titles, totalMovies);
-                // Show order options on menu
+                order_by_year();
                 continue;
             case 'g':
             case 'G':
                 show_genre_filter_page();
                 continue;
-
-            case 'f':
-            case 'F':
-                //show_filter_page();
+            case 'r':
+            case 'R':
+                order_by_rating();
                 continue;
-
             default:
                 printf("Comando desconhecido. Use n, p, i ou q.\n");
                 Sleep(1000);
         }
     }
 
-    bpt_close(TREE_CTX);
+    bpt_close(TREE_CTX_YEAR);
+    bpt_close(TREE_CTX_RATING);
 
     clear_screen();
     // Show cursor before exiting
@@ -267,7 +267,7 @@ void show_genre_filter_page() {
     QueryPerformanceCounter(&end);
 
     double elapsedMs =
-        (double)(end.QuadPart - begin.QuadPart) * 1000.0 / freq.QuadPart;
+            (double) (end.QuadPart - begin.QuadPart) * 1000.0 / freq.QuadPart;
 
     if (count == 0 || results == NULL) {
         printf("Nenhum registro encontrado para %s.\n", genre);
@@ -339,3 +339,267 @@ void show_genre_filter_page() {
     clear_screen();
 }
 
+void order_by_year() {
+    clear_screen();
+    read_title();
+
+    LARGE_INTEGER freq, begin, end;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&begin);
+
+    int totalIds = 0;
+    int capacity = 2048;
+    int *ids = malloc(capacity * sizeof(int));
+
+    int64_t leaf_off = -1;
+    int pos = 0;
+
+    while (1) {
+        int count;
+        int64_t *page = bpt_range_query_page(
+            TREE_CTX_YEAR,
+            INT_MIN, // range completo de ano
+            INT_MAX,
+            &count,
+            &leaf_off,
+            &pos
+        );
+
+        if (count == 0) {
+            free(page);
+            break;
+        }
+
+        // Armazenar os ids retornados
+        for (int i = 0; i < count; i++) {
+            if (totalIds == capacity) {
+                capacity *= 2;
+                ids = realloc(ids, capacity * sizeof(int));
+            }
+
+            // valor armazenado na árvore é um ID, não offset
+            ids[totalIds++] = (int) page[i];
+        }
+
+        free(page);
+
+        if (leaf_off == -1)
+            break;
+    }
+
+    QueryPerformanceCounter(&end);
+    double elapsedMs =
+            (double) (end.QuadPart - begin.QuadPart) * 1000.0 / freq.QuadPart;
+
+    if (totalIds == 0) {
+        printf("Nenhum título encontrado na B+Tree.\n");
+        printf("Pressione ENTER para voltar...");
+        getchar();
+        clear_screen();
+        free(ids);
+        return;
+    }
+
+    Title *ordered = malloc(totalIds * sizeof(Title));
+
+    for (int i = 0; i < totalIds; i++) {
+        ordered[i] = get_title_by_id(ids[i]);
+    }
+
+    free(ids);
+
+    int currentPage = 0;
+    char cmd[16];
+
+    while (1) {
+        clear_screen();
+        read_title();
+
+        int totalPages = (totalIds + PAGE_SIZE - 1) / PAGE_SIZE;
+
+        print_order_year_header(elapsedMs, currentPage, totalPages);
+
+        int start = currentPage * PAGE_SIZE;
+        int endp = start + PAGE_SIZE;
+        if (endp > totalIds) endp = totalIds;
+
+        int printed = 0;
+        for (int i = start; i < endp; i++) {
+            printf("%-4d | %-50s | %4.1f | %-4d | %-10s\n",
+                   ordered[i].id,
+                   ordered[i].primaryTitle,
+                   ordered[i].rating.aggregateRating / 100.0,
+                   ordered[i].startYear,
+                   ordered[i].type);
+            printed++;
+        }
+
+        for (; printed < PAGE_SIZE; printed++)
+            printf("%-4s | %-50s | %-6s | %-4s | %-10s\n",
+                   "", "", "", "", "");
+
+        print_results_menu();
+
+        if (!fgets(cmd, sizeof(cmd), stdin)) break;
+
+        switch (cmd[0]) {
+            case 'q':
+            case 'Q':
+                free(ordered);
+                clear_screen();
+                return;
+
+            case 'n':
+            case 'N':
+                if (currentPage + 1 < totalPages)
+                    currentPage++;
+                break;
+
+            case 'p':
+            case 'P':
+                if (currentPage > 0)
+                    currentPage--;
+                break;
+
+            default:
+                printf("Comando inválido.\n");
+                Sleep(800);
+        }
+    }
+
+    free(ordered);
+    clear_screen();
+}
+
+
+void order_by_rating() {
+    clear_screen();
+    read_title();
+
+    LARGE_INTEGER freq, begin, end;
+    QueryPerformanceFrequency(&freq);
+    QueryPerformanceCounter(&begin);
+
+    int totalIds = 0;
+    int capacity = 2048;
+    int *ids = malloc(capacity * sizeof(int));
+
+    int64_t leaf_off = -1;
+    int pos = 0;
+
+    while (1) {
+        int count;
+        int64_t *page = bpt_range_query_page(
+            TREE_CTX_RATING,
+            INT_MIN,
+            INT_MAX,
+            &count,
+            &leaf_off,
+            &pos
+        );
+
+        if (count == 0) {
+            free(page);
+            break;
+        }
+
+        // Armazenar os ids retornados
+        for (int i = 0; i < count; i++) {
+            if (totalIds == capacity) {
+                capacity *= 2;
+                ids = realloc(ids, capacity * sizeof(int));
+            }
+
+            // valor armazenado na árvore é um ID, não offset
+            ids[totalIds++] = (int) page[i];
+        }
+
+        free(page);
+
+        if (leaf_off == -1)
+            break;
+    }
+
+    QueryPerformanceCounter(&end);
+    double elapsedMs =
+            (double) (end.QuadPart - begin.QuadPart) * 1000.0 / freq.QuadPart;
+
+    if (totalIds == 0) {
+        printf("Nenhum título encontrado na B+Tree.\n");
+        printf("Pressione ENTER para voltar...");
+        getchar();
+        clear_screen();
+        free(ids);
+        return;
+    }
+
+    Title *ordered = malloc(totalIds * sizeof(Title));
+
+    for (int i = 0; i < totalIds; i++) {
+        ordered[i] = get_title_by_id(ids[i]);
+    }
+
+    free(ids);
+
+    int currentPage = 0;
+    char cmd[16];
+
+    while (1) {
+        clear_screen();
+        read_title();
+
+        int totalPages = (totalIds + PAGE_SIZE - 1) / PAGE_SIZE;
+
+        print_order_rating_header(elapsedMs, currentPage, totalPages);
+
+        int start = currentPage * PAGE_SIZE;
+        int endp = start + PAGE_SIZE;
+        if (endp > totalIds) endp = totalIds;
+
+        int printed = 0;
+        for (int i = start; i < endp; i++) {
+            printf("%-4d | %-50s | %4.1f | %-4d | %-10s\n",
+                   ordered[i].id,
+                   ordered[i].primaryTitle,
+                   ordered[i].rating.aggregateRating / 100.0,
+                   ordered[i].startYear,
+                   ordered[i].type);
+            printed++;
+        }
+
+        for (; printed < PAGE_SIZE; printed++)
+            printf("%-4s | %-50s | %-6s | %-4s | %-10s\n",
+                   "", "", "", "", "");
+
+        print_results_menu();
+
+        if (!fgets(cmd, sizeof(cmd), stdin)) break;
+
+        switch (cmd[0]) {
+            case 'q':
+            case 'Q':
+                free(ordered);
+                clear_screen();
+                return;
+
+            case 'n':
+            case 'N':
+                if (currentPage + 1 < totalPages)
+                    currentPage++;
+                break;
+
+            case 'p':
+            case 'P':
+                if (currentPage > 0)
+                    currentPage--;
+                break;
+
+            default:
+                printf("Comando inválido.\n");
+                Sleep(800);
+        }
+    }
+
+    free(ordered);
+    clear_screen();
+}

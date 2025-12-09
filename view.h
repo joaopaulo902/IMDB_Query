@@ -61,3 +61,19 @@ void print_genre_results_header(const char *genre, int currentPage, int totalPag
  * @param elapsedMs time taken to perform the search in milliseconds
  */
 void print_search_header(char *term, int currentPage, int totalPages, double elapsedMs);
+
+/**
+ * Print order by year header
+ * @param elapsedMs time taken to perform the ordering in milliseconds
+ * @param currentPage current page number to be displayed
+ * @param totalPages total number of pages
+ */
+void print_order_year_header(double elapsedMs, int currentPage, int totalPages);
+
+/**
+ * Print order by rating header
+ * @param elapsedMs time taken to perform the ordering in milliseconds
+ * @param currentPage current page number to be displayed
+ * @param totalPages total number of pages
+ */
+void print_order_rating_header(double elapsedMs, int currentPage, int totalPages);

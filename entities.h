@@ -80,7 +80,8 @@ typedef struct {
     time_t updatedAt;
     time_t createdAt;
 
-    char nextPageToken[1024]; //what is the next page's token if processing is halted
+    char nextPageToken[1024];
+    //what is the next page's token if processing is halted
 } FileHeader;
 
 /**

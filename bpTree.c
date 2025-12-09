@@ -788,7 +788,7 @@ int64_t *bpt_range_query_page(BPTree *T, int32_t ylo, int32_t yhi, int *count_ou
 
 int BP_tree_test(void) {
     // open index (creates if missing)
-    BPTree *T = bpt_open(RATING_INDEX_FILE);
+    BPTree *T = bpt_open(YEAR_INDEX_FILE);
     if (!T) {
         fprintf(stderr, "BP_tree_test: failed to open index\n");
         return -1;

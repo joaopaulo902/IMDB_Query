@@ -41,11 +41,21 @@ void print_titles_list(Title *page, int totalMovies, int currentPage);
  * @param currentPage current page number to be displayed
  * @param elapsedMs time taken to perform the search in milliseconds
  */
-void print_search_page_results(Title* results, int count, char* term, int currentPage, double elapsedMs);
+void print_search_page_results(Title *results, int count, char *term, int currentPage, double elapsedMs);
 
 /**
  * Show genre filter page and handle user input
  */
 void show_genre_filter_page();
+
+/**
+ * Show order by year page and handle user input
+ */
+void order_by_year();
+
+/**
+ * Show order by rating page and handle user input
+ */
+void order_by_rating();
 
 #endif //SYSMANAGER_H

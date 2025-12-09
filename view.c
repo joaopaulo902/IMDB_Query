@@ -9,7 +9,6 @@
 #include "filterGenre.h"
 
 void read_title() {
-    printf("\033[2J\033[H"); // limpa e reposiciona
     FILE *ptFile = fopen("title.txt", "r");
     if (!ptFile) return;
 
@@ -60,9 +59,11 @@ void print_title_search_header() {
 }
 
 void print_menu_options() {
-    printf("==================================================================================\n");
-    printf("[p] << Pagina anterior                                       [n] Proxima pagina >> \n");
-    printf("[s] Buscar registro         | [g] Filtrar por genero         | [o] Ordenar por ano \n");
+    printf("================================================================================== \n");
+    printf("[p] << Pagina anterior                                      [n] Proxima pagina >>  \n");
+    printf("================================================================================== \n");
+    printf("[o] Ordenar por ano         [o] Ordenar por rating          [g] Filtrar por genero \n");
+    printf("[s] Buscar registro                                                                \n");
     printf("[i] Info | [q] Sair ============================================================== \n");
     printf("Comando: ");
 }
@@ -132,4 +133,18 @@ void print_search_header(char *term, int currentPage, int totalPages, double ela
     printf("%-4s | %-50s | %-5s | %-4s | %-4s\n",
            "#", "Titulo", "Rating", "Ano", "Tipo");
     printf("-----+----------------------------------------------------+--------+------+------\n");
+}
+
+void print_order_year_header(double elapsedMs, int currentPage, int totalPages) {
+    printf("==================================================================================\n");
+    printf("|| Ordenacao por Ano                            Tempo: %.2f ms | Pagina %d de %d *\n",
+           currentPage + 1, totalPages, elapsedMs);
+    printf("==================================================================================\n");
+}
+
+void print_order_rating_header(double elapsedMs, int currentPage, int totalPages) {
+    printf("==================================================================================\n");
+    printf("|| Ordenacao por Rating                         Tempo: %.2f ms | Pagina %d de %d *\n",
+           currentPage + 1, totalPages, elapsedMs);
+    printf("==================================================================================\n");
 }
