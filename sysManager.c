@@ -110,7 +110,7 @@ void print_titles_list(Title *page, int totalMovies, int currentPage) {
     print_title_list_header(currentPage, totalPages);
 
     for (int i = 0; i < PAGE_SIZE; i++) {
-        printf("%-4d | %-50s |  %4.1f  | %-4d | %-10s\n",
+        printf("%-7d | %-50s |  %4.1f  | %-4d | %-10s\n",
                (currentPage * PAGE_SIZE) + i + 1,
                page[i].primaryTitle,
                page[i].rating.aggregateRating / 100.0,
@@ -223,7 +223,7 @@ void print_search_page_results(Title *results, int count, char *term, int curren
     int printed = 0;
 
     for (int i = start; i < end; i++) {
-        printf("%-4d | %-50s |  %4.1f  | %-4d | %-10s\n",
+        printf("%-7d | %-50s |  %6.1f  | %-4d | %-10s\n",
                results[i].id,
                results[i].primaryTitle,
                results[i].rating.aggregateRating / 100.0,
@@ -233,7 +233,7 @@ void print_search_page_results(Title *results, int count, char *term, int curren
     }
 
     for (; printed < PAGE_SIZE; printed++) {
-        printf("%-4s | %-50s | %-6s | %-4s | %-10s\n", "", "", "", "", "");
+        printf("%-7s | %-50s | %-6s | %-4s | %-10s\n", "", "", "", "", "");
     }
 
     print_results_menu();
@@ -293,7 +293,7 @@ void show_genre_filter_page() {
 
         int printed = 0;
         for (int i = start; i < end; i++) {
-            printf("%-4d | %-50s | %4.1f | %-4d | %-10s\n",
+            printf("%-7lld | %-50s | %6.1f | %-4d | %-10s\n",
                    results[i].id,
                    results[i].primaryTitle,
                    results[i].rating.aggregateRating / 100.0,
@@ -303,7 +303,7 @@ void show_genre_filter_page() {
         }
 
         for (; printed < PAGE_SIZE; printed++)
-            printf("%-4s | %-50s | %-6s | %-4s | %-10s\n",
+            printf("%-7s | %-50s | %-6s | %-4s | %-10s\n",
                    "", "", "", "", "");
 
         print_results_menu();
@@ -389,7 +389,7 @@ void order_by_year() {
 
     QueryPerformanceCounter(&end);
     double elapsedMs =
-            (double) (end.QuadPart - begin.QuadPart) * 1000.0 / freq.QuadPart;
+            (double) (end.QuadPart - begin.QuadPart) * 100000.0 / freq.QuadPart;
 
     if (totalIds == 0) {
         printf("Nenhum título encontrado na B+Tree.\n");
@@ -425,7 +425,7 @@ void order_by_year() {
 
         int printed = 0;
         for (int i = start; i < endp; i++) {
-            printf("%-4d | %-50s | %4.1f | %-4d | %-10s\n",
+            printf("%-7lld | %-50s | %6.1f | %-4d | %-10s\n",
                    ordered[i].id,
                    ordered[i].primaryTitle,
                    ordered[i].rating.aggregateRating / 100.0,
@@ -435,7 +435,7 @@ void order_by_year() {
         }
 
         for (; printed < PAGE_SIZE; printed++)
-            printf("%-4s | %-50s | %-6s | %-4s | %-10s\n",
+            printf("%-7s | %-50s | %-6s | %-4s | %-10s\n",
                    "", "", "", "", "");
 
         print_results_menu();
@@ -558,7 +558,7 @@ void order_by_rating() {
 
         int printed = 0;
         for (int i = start; i < endp; i++) {
-            printf("%-4d | %-50s | %4.1f | %-4d | %-10s\n",
+            printf("%-7lld | %-50s | %6.1f | %-4d | %-10s\n",
                    ordered[i].id,
                    ordered[i].primaryTitle,
                    ordered[i].rating.aggregateRating / 100.0,
@@ -568,7 +568,7 @@ void order_by_rating() {
         }
 
         for (; printed < PAGE_SIZE; printed++)
-            printf("%-4s | %-50s | %-6s | %-4s | %-10s\n",
+            printf("%-7s | %-50s | %-6s | %-4s | %-10s\n",
                    "", "", "", "", "");
 
         print_results_menu();

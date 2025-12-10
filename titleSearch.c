@@ -206,8 +206,10 @@ void save_dictionary(const char *vocabFile, const char *postingsFile) {
         }
     }
 
-    // Ordenar alfabeticamente
+    // Ordenar alfabeticamente (no momento não é estável)
     qsort(list, listCount, sizeof(DictEntry), compare_terms);
+    //tentativa de ordenação estável
+    /*msd_radix_sort_dict(list, listCount);*/
 
     // Escrever vocabulário e postings
     for (int i = 0; i < listCount; i++) {
@@ -218,7 +220,7 @@ void save_dictionary(const char *vocabFile, const char *postingsFile) {
         strncpy(entry.term, list[i].term, sizeof(entry.term) - 1);
 
         // Criar lista encadeada no postings.bin
-        for (int k = 0; k < list[i].count; k++) printf("%d ", list[i].ids[k]);
+        /*for (int k = 0; k < list[i].count; k++) printf("%d ", list[i].ids[k]);*/
 
         entry.firstBlockOffset = write_posting_list(posts, list[i].ids, list[i].count);
 
@@ -358,4 +360,90 @@ int *search_term(char *term, int *outCount) {
 
     // 3. Carregar postings a partir do primeiro bloco
     return load_postings(entry.firstBlockOffset, outCount);
+}
+
+int char_at (const char *s, int d) {
+    unsigned char c = s[d];
+    return (c == '\0') ? -1 : c;
+}
+
+void bubble_sort(DictEntry *a, size_t lo, size_t hi, int d) {
+    if (hi <= lo) return;
+
+    for (size_t i = hi; i > lo; i--) {
+        for (size_t j = lo; j < i; j++) {
+
+            const char *s1 = get_key(&a[j]);
+            const char *s2 = get_key(&a[j + 1]);
+
+            // compare starting at digit d
+            int k = d;
+            while (char_at(s1, k) == char_at(s2, k) &&
+                   char_at(s1, k) >= 0)
+                k++;
+
+            if (char_at(s1, k) > char_at(s2, k)) {
+                DictEntry tmp = a[j];
+                a[j] = a[j + 1];
+                a[j + 1] = tmp;
+            }
+        }
+    }
+}
+
+void msd_sort_rec(DictEntry *a, DictEntry *aux, size_t lo, size_t hi, int d) {
+
+    if (hi <= lo + CUTOFF) {
+        bubble_sort(a, lo, hi, d);
+        return;
+    }
+
+    size_t count[ASCII_SIZE + 2] = {0};
+
+    // Frequency count
+    for (size_t i = lo; i <= hi; i++) {
+        int c = char_at(get_key(&a[i]), d) + 2;
+        count[c]++;
+    }
+
+    // Create cumulative array
+    size_t start[ASCII_SIZE + 2];
+    start[0] = 0;
+    for (int r = 0; r < ASCII_SIZE + 1; r++)
+        start[r + 1] = start[r] + count[r];
+
+    // next[] pointers for distribution
+    size_t next[ASCII_SIZE + 2];
+    memcpy(next, start, sizeof(start));
+
+    // Distribute stably
+    for (size_t i = lo; i <= hi; i++) {
+        int c = char_at(get_key(&a[i]), d) + 1;
+        aux[next[c]++] = a[i];
+    }
+
+    // Copy back
+    for (size_t i = lo; i <= hi; i++)
+        a[i] = aux[i - lo];
+
+    // Recurse into buckets
+    for (int r = 0; r < ASCII_SIZE; r++) {
+        size_t b_lo = lo + start[r];
+        size_t b_hi = lo + start[r + 1] - 1;
+
+        if (b_hi >= b_lo)
+            msd_sort_rec(a, aux, b_lo, b_hi, d + 1);
+    }
+}
+
+
+void msd_radix_sort_dict(DictEntry *arr, size_t n) {
+    if (n <= 1) return;
+    DictEntry *aux = malloc(n * sizeof(DictEntry));
+    msd_sort_rec(arr, aux, 0, n - 1, 0);
+    free(aux);
+}
+
+char *get_key(const DictEntry *e) {
+    return e->term;        // change this if the key is in another field
 }

@@ -10,6 +10,8 @@
 
 #define DICT_SIZE 50021   // very large prime number for hash table size
 #define BLOCK_SIZE 128    // postings block size for scalable index
+#define ASCII_SIZE 256    // size of ascii alphabet
+#define CUTOFF 16         // cutoff for radix sort change of behaviour
 
 /**
  * In-memory posting list structure
@@ -142,4 +144,39 @@ int* load_postings(int64_t offset, int* outCount);
  */
 int* search_term(char* term, int* outCount);
 
+/**
+ * Compares character to '\0', returns -1 if the string has ended
+ * @param s
+ * @param d
+ * @return
+ */
+int char_at(const char *s, int d);
+
+/**
+ *
+ * @param a
+ * @param lo
+ * @param hi
+ * @param d
+ */
+void bubble_sort(DictEntry *a, size_t lo, size_t hi, int d);
+
+/**
+ *
+ * @param a
+ * @param aux
+ * @param lo
+ * @param hi
+ * @param d
+ */
+static void msd_sort_rec(DictEntry *a, DictEntry *aux, size_t lo, size_t hi, int d);
+
+/**
+ *
+ * @param arr
+ * @param n
+ */
+void msd_radix_sort_dict(DictEntry *arr, size_t n);
+
+char *get_key(const DictEntry *e);
 #endif //TITLESEARCH_H

@@ -7,12 +7,13 @@
 #include <limits.h>
 
 int key_cmp(const Key *a, const Key *b) {
-    if (a->value < b->value) return -1;
-    if (a->value > b->value) return 1;
-    if (a->id < b->id) return -1;
-    if (a->id > b->id) return 1;
+    if (a->value > b->value) return -1;
+    if (a->value < b->value) return 1;
+    if (a->id > b->id) return -1;
+    if (a->id < b->id) return 1;
     return 0;
 }
+
 
 enum { HEADER_SIZE = sizeof(NodeHeader) };
 
@@ -520,7 +521,8 @@ void bpt_insert(BPTree *T, int32_t value, int64_t id, int64_t value_offset) {
     int64_t leaf_off = find_leaf_page(T, &k, &leaf);
     if (leaf_off < 0 || leaf == NULL) {
         fprintf(stderr, "bpt_insert: find_leaf_page failed\n");
-        if (leaf) node_free(leaf);
+        if (leaf)
+            node_free(leaf);
         return;
     }
 
@@ -728,7 +730,7 @@ int64_t *bpt_range_query_page(BPTree *T, int32_t ylo, int32_t yhi, int *count_ou
 
     // First call: find starting leaf
     if (*leaf_off_io == -1) {
-        Key k_lo = {.value = ylo, .id = LLONG_MIN};
+        Key k_lo = {.value = yhi, .id = LLONG_MIN};
         *leaf_off_io = find_leaf_page(T, &k_lo, &leaf);
         *pos_io = 0;
 
@@ -748,9 +750,8 @@ int64_t *bpt_range_query_page(BPTree *T, int32_t ylo, int32_t yhi, int *count_ou
         for (int i = *pos_io; i < leaf->hdr.n; i++) {
             int year = leaf->keys[i].value;
 
-            if (year < ylo) continue;
-            if (year > yhi) {
-                // end of range
+            if (year > yhi) continue;
+            if (year < ylo) {
                 node_free(leaf);
                 *leaf_off_io = -1;
                 return results;

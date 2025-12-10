@@ -8,9 +8,9 @@
 #include <stdio.h>
 
 #ifndef TITLES_BIN_PATH
-#define TITLES_BIN_PATH "titles.bin"   // fallback seguro
 #endif
 
+#define TITLES_BIN "titles.bin"
 #define VOCABULARY_BIN_PATH "vocabulary.bin"
 #define POSTINGS_BIN_PATH "postings.bin"
 

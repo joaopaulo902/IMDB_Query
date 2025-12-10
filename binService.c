@@ -74,7 +74,7 @@ void update_file_header(const FileHeader *fH, char fileName[]) {
 
 Title get_title_by_id(int id) {
     Title title = {0};
-    FILE *fp = fopen(TITLES_BIN_PATH, "rb");
+    FILE *fp = fopen(TITLES_BIN, "rb");
     if (!fp) {
         perror("Erro abrindo titles.bin");
         return title;

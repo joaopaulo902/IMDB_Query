@@ -12,6 +12,7 @@
 struct MemoryStruct {
     char *memory;
     size_t size;
+    size_t capacity;
 };
 
 /**
@@ -22,7 +23,7 @@ struct MemoryStruct {
  * @param userp pointer to MemoryStruct
  * @return number of bytes processed
  */
-size_t WriteMemoryCallback(const void *contents, size_t size, size_t nmemb, void *userp);
+size_t WriteMemoryCallback(void *contents, size_t size, size_t nmemb, void *userp);
 
 /**
  * Reads the entire contents of a file into a dynamically allocated buffer

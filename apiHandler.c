@@ -20,8 +20,9 @@ int get_info(char* url, char fileName[]) {
     }
 
     struct MemoryStruct chunk;
-    chunk.memory = malloc(1);
+    chunk.memory = malloc(4096);
     chunk.size = 0;
+    chunk.capacity = 4096;
 
     curl_easy_setopt(curl, CURLOPT_URL, url);
     curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
